@@ -13,5 +13,5 @@ COPY --from=builder /etc/group /etc/group
 COPY --chown=gouser --from=builder /go/bin/ /service/
 USER gouser
 WORKDIR /service/
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["/service/main"]
