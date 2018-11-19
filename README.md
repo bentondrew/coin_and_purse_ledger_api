@@ -9,13 +9,13 @@ Repo structure resources:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.3 .
+docker build -t coin_and_purse_ledger_service:0.0.4 .
 ```
 
 ## Image run command
 
 ```Bash
-docker run --rm coin_and_purse_ledger_service:0.0.3
+docker run --rm coin_and_purse_ledger_service:0.0.4
 ```
 
 ### Expected output
