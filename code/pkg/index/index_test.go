@@ -19,7 +19,7 @@ func TestEndpoints(t *testing.T) {
       name: "good",
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
-      expectedStatus: httptest.StatusOK,
+      expectedStatus: http.StatusOK,
       expectedBody: "Hello World!",
     },
    }
