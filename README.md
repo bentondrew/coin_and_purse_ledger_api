@@ -15,7 +15,7 @@ docker build -t coin_and_purse_ledger_service:0.0.4 .
 ## Image run command
 
 ```Bash
-docker run --rm coin_and_purse_ledger_service:0.0.4
+docker run --rm -p 80:8080 coin_and_purse_ledger_service:0.0.4
 ```
 
 ### Expected output
