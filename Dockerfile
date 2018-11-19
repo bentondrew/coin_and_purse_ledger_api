@@ -3,7 +3,7 @@ RUN adduser -D -g '' gouser
 COPY code/ $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/code/
 WORKDIR $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/code/cmd/srv
 RUN go get -d -v
-# RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -c ./home -o /go/bin/tests/home.test
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -c ../pkg/index -o /go/bin/tests/index.test
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/main
 
 FROM scratch
