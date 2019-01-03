@@ -16,14 +16,14 @@ func TestEndpoints(t *testing.T) {
     in *http.Request
     out *httptest.ResponseRecorder
     expectedStatus int
-    expectedBody []byte
+    expectedBody string
   }{
     {
       name: "good",
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
       expectedStatus: http.StatusNotFound,
-      expectedBody: json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank"}),
+      expectedBody: string(json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank"})[:]),
     },
    }
   for _, test := range tests {
@@ -35,7 +35,7 @@ func TestEndpoints(t *testing.T) {
                test.name, test.expectedStatus, test.out.Code)
         t.Fail()
       }
-      body := test.out.Body
+      body := test.out.Body.String()
       if body != test.expectedBody {
         t.Logf("For Index test %s\nExpected body: %s\nGot body: %s\n",
                test.name, test.expectedBody, body)
