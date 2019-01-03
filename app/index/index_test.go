@@ -4,7 +4,6 @@ import (
   "net/http"
   "net/http/httptest"
   "testing"
-  "fmt"
   "encoding/json"
   "app/problem"
 )
@@ -23,7 +22,7 @@ func TestEndpoints(t *testing.T) {
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
       expectedStatus: http.StatusNotFound,
-      expectedBody: string(json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank"})[:]),
+      expectedBody: string(json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank"})[:]),
     },
    }
   for _, test := range tests {
