@@ -16,7 +16,7 @@ func TestEndpoints(t *testing.T) {
     in *http.Request
     out *httptest.ResponseRecorder
     expectedStatus int
-    expectedBody problem.Problem
+    expectedBody []byte
   }{
     {
       name: "good",
@@ -29,7 +29,7 @@ func TestEndpoints(t *testing.T) {
   for _, test := range tests {
     test := test
     t.Run(test.name, func(t *testing.T) {
-      HandleHello(test.out, test.in)
+      HandleIndex(test.out, test.in)
       if test.out.Code != test.expectedStatus {
         t.Logf("For Index test %s\nExpected status code: %d\nGot status code: %d\n",
                test.name, test.expectedStatus, test.out.Code)
