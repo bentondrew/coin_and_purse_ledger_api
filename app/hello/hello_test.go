@@ -1,4 +1,4 @@
-package index
+package hello
 
 import (
   "net/http"
@@ -17,7 +17,7 @@ func TestEndpoints(t *testing.T) {
   }{
     {
       name: "good",
-      in: httptest.NewRequest("GET", "/", nil),
+      in: httptest.NewRequest("GET", "/test", nil),
       out: httptest.NewRecorder(),
       expectedStatus: http.StatusOK,
       expectedBody: "Hello World!",
@@ -26,16 +26,15 @@ func TestEndpoints(t *testing.T) {
   for _, test := range tests {
     test := test
     t.Run(test.name, func(t *testing.T) {
-      h := NewHandlers(nil)
-      h.Index(test.out, test.in)
+      HandleHello(test.out, test.in)
       if test.out.Code != test.expectedStatus {
-        t.Logf("For Index test %s\nExpected status code: %d\nGot status code: %d\n",
+        t.Logf("For Hello test %s\nExpected status code: %d\nGot status code: %d\n",
                test.name, test.expectedStatus, test.out.Code)
         t.Fail()
       }
       body := test.out.Body.String()
       if body != test.expectedBody {
-        t.Logf("For Index test %s\nExpected body: %s\nGot body: %s\n",
+        t.Logf("For Hello test %s\nExpected body: %s\nGot body: %s\n",
                test.name, test.expectedBody, body)
       }
     })
