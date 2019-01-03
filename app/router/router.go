@@ -27,7 +27,7 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     startTime := time.Now()
     next(w, r)
-    rtr.logger.Printf("Request processed in %s seconds.\n", time.Now().Sub(startTime))
+    rtr.logger.Printf("Request to path %s processed in %s seconds.\n", r.URL, time.Now().Sub(startTime))
   }
 }
 
