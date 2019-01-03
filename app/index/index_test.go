@@ -10,6 +10,7 @@ import (
 
 
 func TestEndpoints(t *testing.T) {
+  b, err := json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})
   tests := []struct {
     name string
     in *http.Request
@@ -22,7 +23,7 @@ func TestEndpoints(t *testing.T) {
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
       expectedStatus: http.StatusNotFound,
-      expectedBody: string(json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank"})[:]),
+      expectedBody: string(b[:]),
     },
    }
   for _, test := range tests {
