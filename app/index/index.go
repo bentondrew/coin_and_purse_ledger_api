@@ -2,7 +2,7 @@ package index
 
 import (
   "net/http"
-  "json"
+  "encoding/json"
   "fmt"
   "app/problem"
 )

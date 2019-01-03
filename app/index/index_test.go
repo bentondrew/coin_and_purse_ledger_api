@@ -4,7 +4,7 @@ import (
   "net/http"
   "net/http/httptest"
   "testing"
-  "json"
+  "encoding/json"
   "app/problem"
 )
 
