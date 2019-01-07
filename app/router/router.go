@@ -34,5 +34,5 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
 
 func (rtr *Router) SetupRoutes() {
   rtr.Mux.HandleFunc("/", rtr.EndpointLogger(index.HandleIndex))
-  rtr.Mux.HandleFunc("/test", rtr.EndpointLogger(hello.HandleHello))
+  rtr.Mux.HandleFunc("/hello", rtr.EndpointLogger(hello.HandleHello))
 }
