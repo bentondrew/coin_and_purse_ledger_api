@@ -6,6 +6,7 @@ import (
   "time"
   "app/hello"
   "app/index"
+  "app/transaction"
 )
 
 
@@ -35,4 +36,5 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
 func (rtr *Router) SetupRoutes() {
   rtr.Mux.HandleFunc("/", rtr.EndpointLogger(index.HandleIndex))
   rtr.Mux.HandleFunc("/hello", rtr.EndpointLogger(hello.HandleHello))
+  rtr.Mux.HandleFunc("/transactions", rtr.EndpointLogger(transaction.HandleGetAllTransactions))
 }
