@@ -13,8 +13,7 @@ func HandleHello(w http.ResponseWriter, r *http.Request) {
   b, err = json.Marshal("Hello World!")
   if err != nil {
     panic(err) 
-  }
-  else {
+  } else {
     w.Write(b)
   }
 }
