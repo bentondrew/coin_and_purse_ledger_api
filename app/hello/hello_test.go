@@ -9,7 +9,7 @@ import (
 
 
 func TestEndpoints(t *testing.T) {
-  b, err := json.Marshal("Hello World!")
+  b, err := json.Marshal("Hiya")
   if err != nil {
     tests := []struct {
       name string
