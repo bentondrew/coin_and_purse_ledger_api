@@ -4,9 +4,9 @@ import (
   "net/http"
   "log"
   "time"
-  "app/hello"
-  "app/index"
-  "app/transaction"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/hello"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/index"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
 

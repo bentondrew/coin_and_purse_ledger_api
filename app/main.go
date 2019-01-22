@@ -2,14 +2,14 @@ package main
 
 
 import (
-  "app/server"
-  "app/logger"
-  "app/router"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/server"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/router"
 )
 
 
 var (
-  version = "0.0.12"
+  version = "0.0.13"
 )
 
 
