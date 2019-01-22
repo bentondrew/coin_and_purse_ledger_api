@@ -2,8 +2,8 @@ FROM golang:1.11.0-alpine3.8 as builder
 RUN adduser -D -g '' gouser
 COPY app/ $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app/
 WORKDIR $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test index
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test hello
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test github.com/Drewan-Tech/coin_and_purse_ledger_service/app/index
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test github.com/Drewan-Tech/coin_and_purse_ledger_service/app/hello
 RUN go get -d -v
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/main
 
