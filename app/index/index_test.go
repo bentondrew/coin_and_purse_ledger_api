@@ -5,7 +5,7 @@ import (
   "net/http/httptest"
   "testing"
   "encoding/json"
-  "app/problem"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
 )
 
 

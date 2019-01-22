@@ -4,7 +4,7 @@ import (
   "net/http"
   "encoding/json"
   "fmt"
-  "app/problem"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
 )
 
 
