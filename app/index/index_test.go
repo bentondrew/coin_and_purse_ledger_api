@@ -11,7 +11,7 @@ import (
 
 func TestEndpoints(t *testing.T) {
   b, err := json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})
-  if err != nil {
+  if err == nil {
     tests := []struct {
       name string
       in *http.Request
@@ -40,6 +40,7 @@ func TestEndpoints(t *testing.T) {
         if body != test.expectedBody {
           t.Logf("For Index test %s\nExpected body: %s\nGot body: %s\n",
                  test.name, test.expectedBody, body)
+          t.Fail()
         }
       })
     } 

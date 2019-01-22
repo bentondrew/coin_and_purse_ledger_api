@@ -10,7 +10,7 @@ import (
 
 func TestEndpoints(t *testing.T) {
   b, err := json.Marshal("Hiya")
-  if err != nil {
+  if err == nil {
     tests := []struct {
       name string
       in *http.Request
@@ -39,6 +39,7 @@ func TestEndpoints(t *testing.T) {
         if body != test.expectedBody {
           t.Logf("For Hello test %s\nExpected body: %s\nGot body: %s\n",
                  test.name, test.expectedBody, body)
+          t.Fail()
         }
       })
     } 
