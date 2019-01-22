@@ -11,7 +11,7 @@ import (
 func HandleIndex(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/problem+json")
   w.WriteHeader(http.StatusNotFound)
-  b, err = json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank",})
+  b, err := json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank",})
   if err != nil {
     panic(err) 
   } else {
