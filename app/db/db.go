@@ -8,7 +8,7 @@ import (
 )
 
 
-func Connection(cb func(conn gorm.DB)) {
+func Connection(cb func(conn *gorm.DB)) {
   db, err := gorm.Open("postgres", "postgresql://ledger_service@localhost:26257/ledger?sslmode=disable")
   if err != nil {
     panic(err)
@@ -23,14 +23,14 @@ func Connection(cb func(conn gorm.DB)) {
 
 
 func CreateTables() {
-  Connection(func(conn gorm.DB) {
+  Connection(func(conn *gorm.DB) {
     conn.AutoMigrate(&transaction.Transaction{})
   })
 }
 
 
 func NewTransactions() {
-  Connection(func(conn gorm.DB) {
+  Connection(func(conn *gorm.DB) {
     conn.Create(&Transaction{Timestamp: time.Now(), Amount: 10})
     conn.Create(&Transaction{Timestamp: time.Now(), Amount: -5})
   })

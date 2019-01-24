@@ -3,6 +3,7 @@ package api
 import (
   "net/http"
   "encoding/json"
+  "github.com/jinzhu/gorm"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
 )
@@ -10,7 +11,7 @@ import (
 
 func HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
   var transactions []transaction.Transaction
-  db.Connection(func(conn gorm.DB) {
+  db.Connection(func(conn *gorm.DB) {
     conn.Find(&transactions)
   })
   w.Header().Set("Content-Type", "application/json")
