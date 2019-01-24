@@ -31,8 +31,8 @@ func CreateTables() {
 
 func NewTransactions() {
   Connection(func(conn *gorm.DB) {
-    conn.Create(&Transaction{Timestamp: time.Now(), Amount: 10})
-    conn.Create(&Transaction{Timestamp: time.Now(), Amount: -5})
+    conn.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
+    conn.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
   })
 }
 
