@@ -4,9 +4,7 @@ import (
   "net/http"
   "log"
   "time"
-  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/hello"
-  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/index"
-  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/api"
 )
 
 
@@ -34,7 +32,7 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
 
 
 func (rtr *Router) SetupRoutes() {
-  rtr.Mux.HandleFunc("/", rtr.EndpointLogger(index.HandleIndex))
-  rtr.Mux.HandleFunc("/hello", rtr.EndpointLogger(hello.HandleHello))
-  rtr.Mux.HandleFunc("/transactions", rtr.EndpointLogger(transaction.HandleGetAllTransactions))
+  rtr.Mux.HandleFunc("/", rtr.EndpointLogger(api.HandleNotFound))
+  rtr.Mux.HandleFunc("/hello", rtr.EndpointLogger(api.HandleHello))
+  rtr.Mux.HandleFunc("/transactions", rtr.EndpointLogger(api.HandleGetAllTransactions))
 }
