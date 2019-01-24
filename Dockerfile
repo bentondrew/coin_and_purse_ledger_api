@@ -1,5 +1,6 @@
 FROM golang:1.11.0-alpine3.8 as builder
-RUN adduser -D -g '' gouser
+RUN apk add --no-cache git && \
+    adduser -D -g '' gouser
 COPY app/ $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app/
 WORKDIR $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test github.com/Drewan-Tech/coin_and_purse_ledger_service/app/index
