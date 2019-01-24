@@ -5,15 +5,18 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/server"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/router"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
 )
 
 
 var (
-  version = "0.0.14"
+  version = "0.0.15"
 )
 
 
 func main() {
+  db.CreateTables()
+  db.NewTransactions()
   logger := logger.NewLogger()
   router := router.NewRouter(logger)
   router.SetupRoutes()
