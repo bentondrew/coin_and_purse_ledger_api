@@ -3,18 +3,13 @@ package db
 import (
   "time"
   "github.com/jinzhu/gorm"
-    "github.com/jinzhu/gorm/dialects/postgres"
+  _ "github.com/jinzhu/gorm/dialects/postgres"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
 
-var (
-  dbAddr = "postgresql://ledger_service@localhost:26257/ledger?sslmode=disable"
-)
-
-
 func Connection(cb func(conn gorm.DB)) {
-  db, err := gorm.Open("postgres", dbAddr)
+  db, err := gorm.Open("postgres", "postgresql://ledger_service@localhost:26257/ledger?sslmode=disable")
   if err != nil {
     panic(err)
   }
