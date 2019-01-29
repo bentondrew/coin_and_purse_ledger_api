@@ -11,13 +11,13 @@ Server structure resources:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.15 .
+docker build -t coin_and_purse_ledger_service:0.0.16 .
 ```
 
 ## Image run command
 
 ```Bash
-docker run --rm -p 80:8080 coin_and_purse_ledger_service:0.0.15
+docker run --rm -p 80:8080 coin_and_purse_ledger_service:0.0.16
 ```
 
 ### Expected output

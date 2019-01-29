@@ -8,17 +8,22 @@ import (
 )
 
 
+func createDbConnectString() string {
+  return "postgresql://ledgerservice@roach1:26257/ledger?sslmode=disable"
+}
+
+
 func Connection(cb func(conn *gorm.DB)) {
-  db, err := gorm.Open("postgres", "postgresql://ledgerservice@roach1:26257/ledger?sslmode=disable")
+  gormdb, err := gorm.Open("postgres", createDbConnectString())
   if err != nil {
     panic(err)
   }
   defer func() {
-    if err := db.Close(); err != nil {
+    if err := gormdb.Close(); err != nil {
       panic(err)
     }
   }()
-  cb(db)
+  cb(gormdb)
 }
 
 
