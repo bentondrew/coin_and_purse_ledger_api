@@ -1,6 +1,8 @@
 package db
 
 import (
+  "os"
+  "strings"
   "time"
   "github.com/jinzhu/gorm"
   _ "github.com/jinzhu/gorm/dialects/postgres"
@@ -9,7 +11,27 @@ import (
 
 
 func createDbConnectString() string {
-  return "postgresql://ledgerservice@roach1:26257/ledger?sslmode=disable"
+  dbUser := ""
+  dbPass := ""
+  dbHost := ""
+  dbPort := ""
+  dbName := ""
+  for _, e := range os.Environ() {
+    pair := strings.Split(e, "=")
+    switch {
+    case pair[0] == "DB_HOST":
+      dbHost = pair[1]
+    case pair[0] == "DB_PORT":
+      dbPort = pair[1]
+    case pair[0] == "DB_USER":
+      dbUser = pair[1]
+    case pair[0] == "DB_PASS":
+      dbPass = pair[1]
+    case pair[0] == "DB_DATABASE":
+      dbName = pair[1]
+    }
+  }
+  return "postgresql://" + dbUser + ":" + dbPass + "@" + dbHost + ":" + dbPort + "/" + dbName + "?sslmode=disable"
 }
 
 

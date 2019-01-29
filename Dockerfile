@@ -15,4 +15,9 @@ COPY --chown=gouser --from=builder /go/bin/ /service/
 USER gouser
 WORKDIR /service/
 EXPOSE 8080
+ENV DB_HOST ledgerdb
+ENV DB_PORT 5432
+ENV DB_USER ledgerservice
+ENV DB_PASS 12345
+ENV DB_DATABASE ledger
 ENTRYPOINT ["/service/main"]
