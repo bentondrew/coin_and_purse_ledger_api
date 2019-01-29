@@ -9,7 +9,7 @@ import (
 
 
 func Connection(cb func(conn *gorm.DB)) {
-  db, err := gorm.Open("postgres", "postgresql://ledgerservice@host.docker.internal:26257/ledger?sslmode=disable")
+  db, err := gorm.Open("postgres", "postgresql://ledgerservice@127.0.0.1:26257/ledger?sslmode=disable")
   if err != nil {
     panic(err)
   }
