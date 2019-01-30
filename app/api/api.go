@@ -4,7 +4,6 @@ import (
   "net/http"
   "encoding/json"
   "fmt"
-  "github.com/jinzhu/gorm"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
