@@ -10,6 +10,22 @@ import (
 )
 
 
+type Database struct {
+  ConnectionPool *gorm.DB
+}
+
+
+func NewDatabase() *Database {
+  gormdb, err := gorm.Open("postgres", createDbConnectString())
+  if err != nil {
+    panic(err)
+  }
+  return &Database{
+    ConnectionPool: gormdb,
+  }
+}
+
+
 func createDbConnectString() string {
   dbUser := ""
   dbPass := ""
@@ -35,33 +51,15 @@ func createDbConnectString() string {
 }
 
 
-func Connection(cb func(conn *gorm.DB)) {
-  gormdb, err := gorm.Open("postgres", createDbConnectString())
-  if err != nil {
-    panic(err)
+func (db *Database) CreateTables() {
+  if !db.ConnectionPool.HasTable(&transaction.Transaction{}){
+    db.ConnectionPool.AutoMigrate(&transaction.Transaction{})
   }
-  defer func() {
-    if err := gormdb.Close(); err != nil {
-      panic(err)
-    }
-  }()
-  cb(gormdb)
 }
 
 
-func CreateTables() {
-  Connection(func(conn *gorm.DB) {
-    if !conn.HasTable(&transaction.Transaction{}){
-      conn.AutoMigrate(&transaction.Transaction{})
-    }
-  })
-}
-
-
-func NewTransactions() {
-  Connection(func(conn *gorm.DB) {
-    conn.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
-    conn.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
-  })
+func (db *Database) NewTransactions() {
+  db.ConnectionPool.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
+  db.ConnectionPool.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
 }
 

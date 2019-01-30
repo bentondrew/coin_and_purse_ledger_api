@@ -6,19 +6,27 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/router"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/api"
 )
 
 
 var (
-  version = "0.0.19"
+  version = "0.0.20"
 )
 
 
 func main() {
-  db.CreateTables()
-  db.NewTransactions()
+  database = db.NewDatabase()
+  defer func() {
+    if err := database.ConnectionPool.Close(); err != nil {
+      panic(err)
+    }
+  }()
+  database.CreateTables()
+  database.NewTransactions()
+  api = api.NewApi(database)
   logger := logger.NewLogger()
-  router := router.NewRouter(logger, "/ledger/v1.0.0")
+  router := router.NewRouter(logger, "/ledger/v1.0.0", api)
   router.SetupRoutes()
   server := server.NewServer(router.Mux)
   logger.Println("Server starting.")
