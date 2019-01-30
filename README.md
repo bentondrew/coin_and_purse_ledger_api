@@ -11,14 +11,11 @@ Server structure resources:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.18 .
+docker build -t coin_and_purse_ledger_service:0.0.19 .
 ```
 
 ## Image run command
 
 ```Bash
-docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.18
+docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.19
 ```
-
-### Expected output
-Should print `Hello world!`

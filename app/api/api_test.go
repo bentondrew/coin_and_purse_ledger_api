@@ -9,15 +9,16 @@ import (
 )
 
 
+func generateJsonByteArray(data interface{}) []byte {
+  b, err := json.Marshal(data)
+  if err != nil {
+    panic(err) 
+  }
+  return b
+}
+
+
 func TestEndpoints(t *testing.T) {
-  b_h, err := json.Marshal("Hello World!")
-  if err != nil {
-    panic(err) 
-  }
-  b_nf, err := json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})
-  if err != nil {
-    panic(err) 
-  }
   tests := []struct {
     name string
     in *http.Request
@@ -27,12 +28,20 @@ func TestEndpoints(t *testing.T) {
     expectedBody string
   }{
     {
-      name: "hello",
+      name: "hello_get",
       in: httptest.NewRequest("GET", "/hello", nil),
       out: httptest.NewRecorder(),
       handlerFunc: HandleHello,
       expectedStatus: http.StatusOK,
-      expectedBody: string(b_h[:]),
+      expectedBody: string(generateJsonByteArray("Hello World!")[:]),
+    },
+    {
+      name: "hello_post",
+      in: httptest.NewRequest("POST", "/hello", nil),
+      out: httptest.NewRecorder(),
+      handlerFunc: HandleHello,
+      expectedStatus: http.StatusMethodNotAllowed,
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /hello", Type: "about:blank",})[:]),
     },
     {
       name: "NotFound",
@@ -40,7 +49,7 @@ func TestEndpoints(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: HandleNotFound,
       expectedStatus: http.StatusNotFound,
-      expectedBody: string(b_nf[:]),
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
     },
    }
   for _, test := range tests {
