@@ -19,7 +19,7 @@ func NewRouter(logger *log.Logger, baseUrl string) *Router {
   return &Router{
     Mux: http.NewServeMux(),
     logger: logger,
-    baseUrl, baseUrl,
+    baseUrl: baseUrl,
   }
 }
 
