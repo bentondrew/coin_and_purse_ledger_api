@@ -51,7 +51,9 @@ func Connection(cb func(conn *gorm.DB)) {
 
 func CreateTables() {
   Connection(func(conn *gorm.DB) {
-    conn.AutoMigrate(&transaction.Transaction{})
+    if !conn.HasTable(&transaction.Transaction{}){
+      conn.AutoMigrate(&transaction.Transaction{})
+    }
   })
 }
 
