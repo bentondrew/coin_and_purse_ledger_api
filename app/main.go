@@ -10,7 +10,7 @@ import (
 
 
 var (
-  version = "0.0.16"
+  version = "0.0.17"
 )
 
 
@@ -18,7 +18,7 @@ func main() {
   db.CreateTables()
   db.NewTransactions()
   logger := logger.NewLogger()
-  router := router.NewRouter(logger)
+  router := router.NewRouter(logger, "/ledger/v1.0.0")
   router.SetupRoutes()
   server := server.NewServer(router.Mux)
   logger.Println("Server starting.")

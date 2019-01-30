@@ -11,13 +11,15 @@ import (
 type Router struct {
   Mux *http.ServeMux
   logger *log.Logger
+  baseUrl string
 } 
 
 
-func NewRouter(logger *log.Logger) *Router {
+func NewRouter(logger *log.Logger, baseUrl string) *Router {
   return &Router{
     Mux: http.NewServeMux(),
     logger: logger,
+    baseUrl, baseUrl,
   }
 }
 
@@ -33,6 +35,6 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
 
 func (rtr *Router) SetupRoutes() {
   rtr.Mux.HandleFunc("/", rtr.EndpointLogger(api.HandleNotFound))
-  rtr.Mux.HandleFunc("/hello", rtr.EndpointLogger(api.HandleHello))
-  rtr.Mux.HandleFunc("/transactions", rtr.EndpointLogger(api.HandleGetAllTransactions))
+  rtr.Mux.HandleFunc(rtr.baseUrl + "/hello", rtr.EndpointLogger(api.HandleHello))
+  rtr.Mux.HandleFunc(rtr.baseUrl + "/transactions", rtr.EndpointLogger(api.HandleGetAllTransactions))
 }
