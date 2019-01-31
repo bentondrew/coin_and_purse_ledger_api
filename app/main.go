@@ -16,14 +16,14 @@ var (
 
 
 func main() {
-  database = db.NewDatabase()
+  database := db.OpenPostgresDatabase()
   defer func() {
-    if err := database.ConnectionPool.Close(); err != nil {
+    if err := database.Close(); err != nil {
       panic(err)
     }
   }()
-  database.CreateTables()
-  database.NewTransactions()
+  database.CreateTables(database)
+  database.NewTransactions(database)
   api = api.NewApi(database)
   logger := logger.NewLogger()
   router := router.NewRouter(logger, "/ledger/v1.0.0", api)

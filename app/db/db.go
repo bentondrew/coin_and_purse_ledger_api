@@ -10,19 +10,20 @@ import (
 )
 
 
-type Database struct {
-  ConnectionPool *gorm.DB
+type DataStore interface {
+  Find()
+  HasTable()
+  AutoMigrate()
+  Create()
 }
 
 
-func NewDatabase() *Database {
+func OpenPostgresDatabase() *gorm.DB {
   gormdb, err := gorm.Open("postgres", createDbConnectString())
   if err != nil {
     panic(err)
   }
-  return &Database{
-    ConnectionPool: gormdb,
-  }
+  return gormdb
 }
 
 
@@ -51,15 +52,14 @@ func createDbConnectString() string {
 }
 
 
-func (db *Database) CreateTables() {
-  if !db.ConnectionPool.HasTable(&transaction.Transaction{}){
-    db.ConnectionPool.AutoMigrate(&transaction.Transaction{})
+func CreateTables(db DataStore) {
+  if !db.HasTable(&transaction.Transaction{}){
+    db.AutoMigrate(&transaction.Transaction{})
   }
 }
 
 
-func (db *Database) NewTransactions() {
-  db.ConnectionPool.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
-  db.ConnectionPool.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
+func NewTransactions(db DataStore) {
+  db.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
+  db.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
 }
-

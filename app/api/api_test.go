@@ -6,6 +6,7 @@ import (
   "testing"
   "encoding/json"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
 )
 
 
@@ -19,6 +20,7 @@ func generateJsonByteArray(data interface{}) []byte {
 
 
 func TestEndpoints(t *testing.T) {
+  api = NewApi(db.NewMockDatabase())
   tests := []struct {
     name string
     in *http.Request
@@ -31,7 +33,7 @@ func TestEndpoints(t *testing.T) {
       name: "hello_get",
       in: httptest.NewRequest("GET", "/hello", nil),
       out: httptest.NewRecorder(),
-      handlerFunc: HandleHello,
+      handlerFunc: api.HandleHello,
       expectedStatus: http.StatusOK,
       expectedBody: string(generateJsonByteArray("Hello World!")[:]),
     },
@@ -39,7 +41,7 @@ func TestEndpoints(t *testing.T) {
       name: "hello_post",
       in: httptest.NewRequest("POST", "/hello", nil),
       out: httptest.NewRecorder(),
-      handlerFunc: HandleHello,
+      handlerFunc: api.HandleHello,
       expectedStatus: http.StatusMethodNotAllowed,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /hello", Type: "about:blank",})[:]),
     },
@@ -47,9 +49,25 @@ func TestEndpoints(t *testing.T) {
       name: "NotFound",
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
-      handlerFunc: HandleNotFound,
+      handlerFunc: api.HandleNotFound,
       expectedStatus: http.StatusNotFound,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
+    },
+    {
+      name: "transactions_get",
+      in: httptest.NewRequest("GET", "/transactions", nil),
+      out: httptest.NewRecorder(),
+      handlerFunc: api.HandleGetAllTransactions,
+      expectedStatus: http.StatusOK,
+      expectedBody: string(generateJsonByteArray([transaction.Transaction{ID: 1, Timestamp: "2019-01-30T03:17:41.12004Z", Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: "2019-01-30T19:41:10.421617Z", Amount: -5,}])[:]),
+    },
+    {
+      name: "transactions_post",
+      in: httptest.NewRequest("POST", "/transactions", nil),
+      out: httptest.NewRecorder(),
+      handlerFunc: api.HandleGetAllTransactions,
+      expectedStatus: http.StatusMethodNotAllowed,
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /hello", Type: "about:blank",})[:]),
     },
    }
   for _, test := range tests {

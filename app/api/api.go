@@ -11,11 +11,11 @@ import (
 
 
 type API struct {
-  database *db.Database
+  database db.DataStore
 }
 
 
-func NewApi(database *db.Database) *API {
+func NewApi(database *db.DataStore) *API {
   return &API {
     database: database,
   }
@@ -63,7 +63,7 @@ func (a *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
   switch r.Method {
   case http.MethodGet:
     var transactions []transaction.Transaction
-    a.database.ConnectionPool.Find(&transactions)
+    a.database.Find(&transactions)
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
     addJsonResponseBody(transactions, w)
