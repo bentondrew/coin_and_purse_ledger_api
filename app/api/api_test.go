@@ -59,7 +59,7 @@ func TestEndpoints(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleGetAllTransactions,
       expectedStatus: http.StatusOK,
-      expectedBody: string(generateJsonByteArray([transaction.Transaction{ID: 1, Timestamp: "2019-01-30T03:17:41.12004Z", Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: "2019-01-30T19:41:10.421617Z", Amount: -5,}])[:]),
+      expectedBody: string(generateJsonByteArray([]transaction.Transaction{transaction.Transaction{ID: 1, Timestamp: "2019-01-30T03:17:41.12004Z", Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: "2019-01-30T19:41:10.421617Z", Amount: -5,}})[:]),
     },
     {
       name: "transactions_post",
