@@ -11,10 +11,10 @@ import (
 
 
 type DataStore interface {
-  Find()
-  HasTable()
-  AutoMigrate()
-  Create()
+  Find(out interface{}, where ...interface{}) *gorm.DB
+  HasTable(value interface{}) bool
+  AutoMigrate(values ...interface{}) *gorm.DB
+  Create(value interface{}) *gorm.DB
 }
 
 
