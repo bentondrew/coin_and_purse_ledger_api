@@ -29,7 +29,7 @@ func (db *DB) Find(out interface{}, where ...interface{}) *DB {
   if v, ok := out.(*[]transaction.Transaction); ok {
     append(&out, transaction.Transaction{ID: 1, Timestamp: "2019-01-30T03:17:41.12004Z", Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: "2019-01-30T19:41:10.421617Z", Amount: -5,})
   } else {
-    logger.Println("Mockdb Find does not recognize type of provided out.")
+    db.logger.Println("Mockdb Find does not recognize type of provided out.")
   }
   return db
 }
