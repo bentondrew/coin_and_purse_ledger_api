@@ -7,6 +7,7 @@ import (
   "encoding/json"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
 )
 
 
@@ -20,7 +21,8 @@ func generateJsonByteArray(data interface{}) []byte {
 
 
 func TestEndpoints(t *testing.T) {
-  api = NewApi(db.NewMockDatabase())
+  logger = logger.NewLogger()
+  api = NewApi(db.NewMockDatabase(logger))
   tests := []struct {
     name string
     in *http.Request
