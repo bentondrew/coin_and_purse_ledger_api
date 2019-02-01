@@ -15,7 +15,7 @@ type API struct {
 }
 
 
-func NewApi(database *db.DataStore) *API {
+func NewApi(database db.DataStore) *API {
   return &API {
     database: database,
   }
