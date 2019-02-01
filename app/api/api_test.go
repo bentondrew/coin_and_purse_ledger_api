@@ -21,8 +21,8 @@ func generateJsonByteArray(data interface{}) []byte {
 
 
 func TestEndpoints(t *testing.T) {
-  logger = logger.NewLogger()
-  api = NewApi(db.NewMockDatabase(logger))
+  logger := logger.NewLogger()
+  api := NewApi(db.NewMockDatabase(logger))
   tests := []struct {
     name string
     in *http.Request
