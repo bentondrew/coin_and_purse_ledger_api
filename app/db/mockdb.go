@@ -42,7 +42,8 @@ func (db *DB) Find(out interface{}, where ...interface{}) *DB {
         if err != nil {
           panic(err) 
         }
-        append(reflect.TypeOf(out).Elem().Interface(), transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: t2, Amount: -5,})
+        sl := reflect.ValueOf(out).Elem()
+        value.Set(reflect.Append(sl, reflect.ValueOf(transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}), reflect.ValueOf(transaction.Transaction{ID: 1, Timestamp: t2, Amount: -5,})))
       default:
         db.logger.Println("Mockdb Find currently only handles struct of type transaction.Transaction.")
       }
