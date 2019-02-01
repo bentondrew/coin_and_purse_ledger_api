@@ -33,7 +33,7 @@ func (db *DB) Find(out interface{}, where ...interface{}) *DB {
     switch reflect.TypeOf(out).Elem().Kind() {
     case reflect.Struct:
       switch {
-      case reflect.TypeOf(out).Elem().Name() == transaction.Transaction:
+      case reflect.TypeOf(out).Elem().Name() == "transaction.Transaction":
         t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
         if err != nil {
           panic(err) 
