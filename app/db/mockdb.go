@@ -27,6 +27,24 @@ func NewMockDatabase(logger *log.Logger) *DB {
 }
 
 
+func (db *DB) HasTable(value interface{}) bool {
+  db.logger.Println("Mockdb HasTable not implemented.")
+  return false
+}
+
+
+func (db *DB) AutoMigrate(values ...interface{}) *DB {
+  db.logger.Println("Mockdb AutoMigrate not implemented.")
+  return db
+}
+
+
+func (db *DB) Create(value interface{}) *DB {
+  db.logger.Println("Mockdb Create not implemented.")
+  return db
+}
+
+
 func (db *DB) Find(out interface{}, where ...interface{}) *DB {
   switch reflect.TypeOf(out).Kind() {
   case reflect.Slice:
