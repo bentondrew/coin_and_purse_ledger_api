@@ -32,8 +32,8 @@ func (db *DB) Find(out interface{}, where ...interface{}) *DB {
   case reflect.Slice:
     switch reflect.TypeOf(out).Elem().Kind() {
     case reflect.Struct:
-      switch reflect.TypeOf(out).Elem().Name() {
-      case transaction.Transaction:
+      switch {
+      case reflect.TypeOf(out).Elem().Name() == transaction.Transaction:
         t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
         if err != nil {
           panic(err) 
