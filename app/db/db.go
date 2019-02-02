@@ -11,10 +11,10 @@ import (
 
 
 type DataStore interface {
-  Find(out interface{}, where ...interface{})
+  Find(out interface{}, where ...interface{}) interface{}
   HasTable(value interface{}) bool
-  AutoMigrate(values ...interface{})
-  Create(value interface{})
+  AutoMigrate(values ...interface{}) interface{}
+  Create(value interface{}) interface{}
 }
 
 
