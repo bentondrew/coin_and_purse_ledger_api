@@ -8,7 +8,6 @@ import (
   "encoding/json"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
-  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
@@ -23,8 +22,6 @@ func generateJsonByteArray(data interface{}) []byte {
 
 
 func TestEndpoints(t *testing.T) {
-  logger := logger.NewLogger()
-  api := NewApi(db.NewMockDatabase(logger))
   t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
   if err != nil {
     panic(err) 
@@ -33,6 +30,10 @@ func TestEndpoints(t *testing.T) {
   if err != nil {
     panic(err) 
   }
+  transactions := []transaction.Transaction{transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: t2, Amount: -5,}}
+  mockStore := db.NewMockStore()
+  mockStore.On("GetTransactions").Return(transactions, nil).Once()
+  api := NewApi(mockStore)
   tests := []struct {
     name string
     in *http.Request
@@ -71,7 +72,7 @@ func TestEndpoints(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleGetAllTransactions,
       expectedStatus: http.StatusOK,
-      expectedBody: string(generateJsonByteArray([]transaction.Transaction{transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: t2, Amount: -5,}})[:]),
+      expectedBody: string(generateJsonByteArray(transactions)[:]),
     },
     {
       name: "transactions_post",

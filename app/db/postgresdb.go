@@ -10,11 +10,15 @@ import (
 )
 
 
-type DataStore interface {
-  Find(out interface{}, where ...interface{}) interface{}
-  HasTable(value interface{}) bool
-  AutoMigrate(values ...interface{}) interface{}
-  Create(value interface{}) interface{}
+type Postgresdb struct {
+  gormdb *gorm.DB
+}
+
+
+func InitPostgresDatabase() *Postgresdb {
+  return &Postgresdb{
+    gormdb : OpenPostgresDatabase(),
+  }
 }
 
 
@@ -52,14 +56,27 @@ func createDbConnectString() string {
 }
 
 
-func CreateTables(db DataStore) {
-  if !db.HasTable(&transaction.Transaction{}){
-    db.AutoMigrate(&transaction.Transaction{})
+func (p *Postgresdb) CreateTables() {
+  if !p.HasTable(&transaction.Transaction{}){
+    p.AutoMigrate(&transaction.Transaction{})
   }
 }
 
 
-func NewTransactions(db DataStore) {
-  db.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
-  db.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
+func (p *Postgresdb) NewTransactions() {
+  p.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
+  p.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
+}
+
+
+func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) error {
+  p.Create(transaction)
+  return nil
+}
+
+
+func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
+  var transactions []transaction.Transaction
+  p.Find(&transactions)
+  return transactions, nil
 }

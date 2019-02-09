@@ -5,6 +5,8 @@ Repo structure resources:
 - [Go best practices](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
 Server structure resources:
 - [Go server components](https://medium.com/statuscode/how-i-write-go-http-services-after-seven-years-37c208122831)
+DB Mocking:
+- [Adding DB to web application](https://www.sohamkamani.com/blog/2017/10/18/golang-adding-database-to-web-application/)
 
 
 ## Docker image build command

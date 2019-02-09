@@ -11,13 +11,13 @@ import (
 
 
 type API struct {
-  database db.DataStore
+  store db.DataStore
 }
 
 
-func NewApi(database db.DataStore) *API {
+func NewApi(store db.DataStore) *API {
   return &API {
-    database: database,
+    store: store,
   }
 }
 
@@ -62,11 +62,9 @@ func (a *API) HandleHello(w http.ResponseWriter, r *http.Request) {
 func (a *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
   switch r.Method {
   case http.MethodGet:
-    var transactions []transaction.Transaction
-    a.database.Find(&transactions)
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
-    addJsonResponseBody(transactions, w)
+    addJsonResponseBody(a.store.GetTransactions(), w)
   default:
     a.HandleMethodNotAllowed(w, r)
   }
