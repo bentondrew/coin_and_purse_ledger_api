@@ -56,6 +56,13 @@ func createDbConnectString() string {
 }
 
 
+func (p *Postgresdb) Close() {
+  if err := p.gormdb.Close(); err != nil {
+    panic(err)
+  }
+}
+
+
 func (p *Postgresdb) CreateTables() {
   if !p.gormdb.HasTable(&transaction.Transaction{}){
     p.gormdb.AutoMigrate(&transaction.Transaction{})

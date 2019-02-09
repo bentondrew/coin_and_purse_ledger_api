@@ -18,9 +18,7 @@ var (
 func main() {
   database := db.InitPostgresDatabase()
   defer func() {
-    if err := database.gormdb.Close(); err != nil {
-      panic(err)
-    }
+    database.Close()
   }()
   database.CreateTables()
   database.NewTransactions()
