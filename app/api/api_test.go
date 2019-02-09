@@ -30,7 +30,9 @@ func TestEndpoints(t *testing.T) {
   if err != nil {
     panic(err) 
   }
-  transactions := []transaction.Transaction{transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}, transaction.Transaction{ID: 1, Timestamp: t2, Amount: -5,}}
+  transactions := []*transaction.Transaction{}
+  transactions.append(transactions, &transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,})
+  transactions.append(transactions, &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}) 
   mockStore := db.NewMockStore()
   mockStore.On("GetTransactions").Return(transactions, nil).Once()
   api := NewApi(mockStore)
