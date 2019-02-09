@@ -4,7 +4,6 @@ import (
   "net/http"
   "encoding/json"
   "fmt"
-  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
 )
@@ -26,9 +25,8 @@ func addJsonResponseBody(data interface{}, w http.ResponseWriter) {
   b, err := json.Marshal(data)
   if err != nil {
     panic(err) 
-  } else {
-    w.Write(b)
   }
+  w.Write(b)
 }
 
 
@@ -64,7 +62,11 @@ func (a *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
   case http.MethodGet:
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
-    addJsonResponseBody(a.store.GetTransactions(), w)
+    transactions, err := a.store.GetTransactions()
+    if err != nil {
+      panic(err) 
+    }
+    addJsonResponseBody(transactions, w)
   default:
     a.HandleMethodNotAllowed(w, r)
   }
