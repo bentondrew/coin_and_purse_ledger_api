@@ -76,7 +76,7 @@ func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) err
 
 
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
-  var transactions *[]transaction.Transaction
-  p.gormdb.Find(transactions)
+  var transactions []*transaction.Transaction
+  p.gormdb.Find(&transactions)
   return transactions, nil
 }
