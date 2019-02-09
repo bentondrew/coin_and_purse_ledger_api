@@ -57,26 +57,26 @@ func createDbConnectString() string {
 
 
 func (p *Postgresdb) CreateTables() {
-  if !p.HasTable(&transaction.Transaction{}){
-    p.AutoMigrate(&transaction.Transaction{})
+  if !p.gormdb.HasTable(&transaction.Transaction{}){
+    p.gormdb.AutoMigrate(&transaction.Transaction{})
   }
 }
 
 
 func (p *Postgresdb) NewTransactions() {
-  p.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
-  p.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
+  p.gormdb.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
+  p.gormdb.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
 }
 
 
 func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) error {
-  p.Create(transaction)
+  p.gormdb.Create(transaction)
   return nil
 }
 
 
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
-  var transactions []transaction.Transaction
-  p.Find(&transactions)
+  var transactions *[]transaction.Transaction
+  p.gormdb.Find(transactions)
   return transactions, nil
 }
