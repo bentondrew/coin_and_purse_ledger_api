@@ -65,25 +65,31 @@ func (p *Postgresdb) Close() {
 
 func (p *Postgresdb) CreateTables() {
   if !p.gormdb.HasTable(&transaction.Transaction{}){
-    p.gormdb.AutoMigrate(&transaction.Transaction{})
+    if err := p.gormdb.AutoMigrate(&transaction.Transaction{}).Error; err != nil {
+      panic(err)
+    }
   }
 }
 
 
 func (p *Postgresdb) NewTransactions() {
-  p.gormdb.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: 10})
-  p.gormdb.Create(&transaction.Transaction{Timestamp: time.Now(), Amount: -5})
+  if err := p.CreateTransaction(&transaction.Transaction{Timestamp: time.Now(), Amount: 10}); err != nil {
+    panic(err) 
+  }
+  if err := p.CreateTransaction(&transaction.Transaction{Timestamp: time.Now(), Amount: -5}); err != nil {
+    panic(err) 
+  }
 }
 
 
 func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) error {
-  p.gormdb.Create(transaction)
-  return nil
+  result := p.gormdb.Create(transaction)
+  return result.Error
 }
 
 
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
   var transactions []*transaction.Transaction
-  p.gormdb.Find(&transactions)
-  return transactions, nil
+  result := p.gormdb.Find(&transactions)
+  return transactions, result.Error
 }
