@@ -22,7 +22,7 @@ func main() {
   }()
   database.CreateTables()
   database.NewTransactions()
-  api = api.NewApi(database)
+  api := api.NewApi(database)
   logger := logger.NewLogger()
   router := router.NewRouter(logger, "/ledger/v1.0.0", api)
   router.SetupRoutes()
