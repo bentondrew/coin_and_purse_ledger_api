@@ -49,31 +49,31 @@ func (api *API) HandleServerError(w http.ResponseWriter, r *http.Request, err in
 }
 
 
-func (a *API) HandleMethodNotAllowed(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleMethodNotAllowed(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/problem+json")
   w.WriteHeader(http.StatusMethodNotAllowed)
   addJsonResponseBody(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: fmt.Sprintf("%s is not supported by %s", r.Method, r.URL), Type: "about:blank",}, w)
 }
 
 
-func (a *API) HandleNotFound(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleNotFound(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/problem+json")
   w.WriteHeader(http.StatusNotFound)
   addJsonResponseBody(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank",}, w)
 }
 
 
-func (a *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
   api.errorRecovery(api.HandleNotFound)(w, r)
 }
 
 
-func (a *API) HandleHello(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
   api.errorRecovery(api.helloResponseGeneration)(w, r)
 }
 
 
-func (a *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) {
+func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) {
   switch r.Method {
   case http.MethodGet:
     w.Header().Set("Content-Type", "application/json")
@@ -81,17 +81,17 @@ func (a *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
     addJsonResponseBody("Hello World!", w)
   default:
-    a.HandleMethodNotAllowed(w, r)
+    api.HandleMethodNotAllowed(w, r)
   }
 }
 
 
-func (a *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
   api.errorRecovery(api.getAllTransactionsResponseGeneration)(w, r)
 }
 
 
-func (a *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) {
+func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) {
   switch r.Method {
   case http.MethodGet:
     w.Header().Set("Content-Type", "application/json")
@@ -102,6 +102,6 @@ func (a *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *htt
     }
     addJsonResponseBody(transactions, w)
   default:
-    a.HandleMethodNotAllowed(w, r)
+    api.HandleMethodNotAllowed(w, r)
   }
 }
