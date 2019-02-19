@@ -1,4 +1,4 @@
-FROM golang:1.11.0-alpine3.8 as builder
+FROM golang:1.11.5-alpine3.8 as builder
 RUN apk add --no-cache git && \
     adduser -D -g '' gouser
 COPY app/ $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app/
