@@ -45,7 +45,7 @@ func (api *API) errorRecovery(next http.HandlerFunc) http.HandlerFunc {
 func (api *API) HandleServerError(w http.ResponseWriter, r *http.Request, err interface{}) {
   w.Header().Set("Content-Type", "application/problem+json")
   w.WriteHeader(http.StatusInternalServerError)
-  addJsonResponseBody(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: fmt.Println(err), Type: "about:blank",}, w)
+  addJsonResponseBody(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: fmt.Sprintf("%s", err), Type: "about:blank",}, w)
 }
 
 
@@ -96,7 +96,7 @@ func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *h
   case http.MethodGet:
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
-    transactions, err := a.store.GetTransactions()
+    transactions, err := api.store.GetTransactions()
     if err != nil {
       panic(err) 
     }
