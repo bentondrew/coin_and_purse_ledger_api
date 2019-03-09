@@ -24,14 +24,14 @@ func NewApi(store db.DataStore) *API {
 }
 
 
-func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err interface{}) (int, []byte, error) {
+func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err error) (int, []byte, error) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: fmt.Sprintf("%s", err), Type: "about:blank",})
   return http.StatusInternalServerError, b, err
 }
 
 
-func (api *API) errorRecovery(next responseGenerator) (int, []byte) {
+func (api *API) errorRecovery(next responseGenerator) func(w http.ResponseWriter, req *http.Request) (int, []byte) {
   return func(w http.ResponseWriter, req *http.Request) (int, []byte) {
     statusCode, body, err := next(w, req)
     if err != nil {
@@ -39,7 +39,7 @@ func (api *API) errorRecovery(next responseGenerator) (int, []byte) {
       if err != nil {
         // handleServerError uses json marshal, this second error catching manually overrides so that
         // there is a definite exit point.
-        error_string := fmt.Sprintf("%s", rec)
+        error_string := fmt.Sprintf("%s", err)
         json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
         body := []byte(json_string)
         statusCode := http.StatusInternalServerError
@@ -63,7 +63,7 @@ func (api *API) responseWriter(w http.ResponseWriter, statusCode int, body []byt
 func (api *API) apiHandlerFunc(next responseGenerator) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     statusCode, body := api.errorRecovery(next)(w, r)
-    responseWriter(w, statusCode, body) 
+    api.responseWriter(w, statusCode, body) 
   }
 }
 
@@ -110,7 +110,7 @@ func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *h
   case http.MethodGet:
     transactions, err := api.store.GetTransactions()
     if err != nil {
-      return nil, nil, err 
+      return 0, []byte(""), err 
     }
     w.Header().Set("Content-Type", "application/json")
     b, err := json.Marshal(transactions)
