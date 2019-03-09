@@ -43,7 +43,9 @@ func (api *API) errorRecovery(next responseGenerator) func(w http.ResponseWriter
         json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
         body := []byte(json_string)
         statusCode := http.StatusInternalServerError
+        return statusCode, body
       }
+      return statusCode, body
     }
     return statusCode, body
   }
