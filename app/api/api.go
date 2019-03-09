@@ -37,7 +37,7 @@ func (api *API) errorRecovery(next responseGenerator) func(w http.ResponseWriter
     if err != nil {
       statusCode, body, err := api.handleServerError(w, req, err)
       if err != nil {
-        // handleServerError uses json marshal, this second error catching manually overrides so that
+        // handleServerError uses json marshal. This second error catch manually overrides so that
         // there is a definite exit point.
         error_string := fmt.Sprintf("%s", err)
         json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
