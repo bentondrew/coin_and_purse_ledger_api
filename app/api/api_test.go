@@ -64,7 +64,7 @@ func TestEndpoints(t *testing.T) {
       name: "NotFound",
       in: httptest.NewRequest("GET", "/", nil),
       out: httptest.NewRecorder(),
-      handlerFunc: api.HandleNotFound,
+      handlerFunc: api.HandleDefault,
       expectedStatus: http.StatusNotFound,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
     },
