@@ -167,6 +167,13 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
           outputString = outputString + keyString
         }
         api.logger.Println(outputString)
+        json_bytes, err := json.Marshal(outputString)
+        b = json_bytes
+        if err != nil {
+          panic(err) 
+        }
+        status = http.StatusOK
+
       }
       w.Header().Set("Content-Type", "application/json")
       return status, b
