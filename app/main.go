@@ -27,7 +27,7 @@ func main() {
     logger.Println("Unable to add example transactions to database " +
                    "as the database wasn't successfully initialized.")
   }
-  api := api.NewAPI(database)
+  api := api.NewAPI(database, logger)
   router := router.NewRouter(logger, "/ledger/v1.0.0", api)
   router.SetupRoutes()
   server := server.NewServer(router.Mux)

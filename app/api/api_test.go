@@ -37,7 +37,7 @@ func TestEndpointsGoodDB(t *testing.T) {
   mockStore.On("GetTransactions").Return(transactions, nil).Once()
   mockStore.On("InitializeDatabase").Return(true).Once()
   mockStore.On("DatabaseInitialized").Return(true).Once()
-  api := NewAPI(mockStore)
+  api := NewAPI(mockStore, nil)
   tests := []struct {
     name string
     in *http.Request
