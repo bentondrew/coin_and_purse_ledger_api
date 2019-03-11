@@ -33,6 +33,11 @@ func TestEndpoints(t *testing.T) {
   transactions := []*transaction.Transaction{}
   transactions = append(transactions, &transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,})
   transactions = append(transactions, &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}) 
+  mockStore := db.NewMockStore()
+  mockStore.On("GetTransactions").Return(transactions, nil).Once()
+  mockStore.On("InitializeDatabase").Return(true).Once()
+  mockStore.On("DatabaseInitialized").Return(true).Once()
+  api := NewAPI(mockStore)
   tests := []struct {
     name string
     in *http.Request
@@ -40,10 +45,6 @@ func TestEndpoints(t *testing.T) {
     handlerFunc http.HandlerFunc
     expectedStatus int
     expectedBody string
-    mockTransactions []*transaction.Transaction
-    mockGetTransactionsError error
-    mockDBInitialize bool
-    mockDBInitializeCheck bool
   }{
     {
       name: "hello_get",
@@ -52,10 +53,6 @@ func TestEndpoints(t *testing.T) {
       handlerFunc: api.HandleHello,
       expectedStatus: http.StatusOK,
       expectedBody: string(generateJsonByteArray("Hello World!")[:]),
-      mockTransactions: transactions,
-      mockGetTransactionsError: nil,
-      mockDBInitialize: true,
-      mockDBInitializeCheck: true,
     },
     {
       name: "hello_post",
@@ -64,10 +61,6 @@ func TestEndpoints(t *testing.T) {
       handlerFunc: api.HandleHello,
       expectedStatus: http.StatusMethodNotAllowed,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /hello", Type: "about:blank",})[:]),
-      mockTransactions: transactions,
-      mockGetTransactionsError: nil,
-      mockDBInitialize: true,
-      mockDBInitializeCheck: true,
     },
     {
       name: "NotFound",
@@ -76,10 +69,6 @@ func TestEndpoints(t *testing.T) {
       handlerFunc: api.HandleDefault,
       expectedStatus: http.StatusNotFound,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
-      mockTransactions: transactions,
-      mockGetTransactionsError: nil,
-      mockDBInitialize: true,
-      mockDBInitializeCheck: true,
     },
     {
       name: "transactions_get",
@@ -88,10 +77,6 @@ func TestEndpoints(t *testing.T) {
       handlerFunc: api.HandleGetAllTransactions,
       expectedStatus: http.StatusOK,
       expectedBody: string(generateJsonByteArray(transactions)[:]),
-      mockTransactions: transactions,
-      mockGetTransactionsError: nil,
-      mockDBInitialize: true,
-      mockDBInitializeCheck: true,
     },
     {
       name: "transactions_post",
@@ -100,19 +85,10 @@ func TestEndpoints(t *testing.T) {
       handlerFunc: api.HandleGetAllTransactions,
       expectedStatus: http.StatusMethodNotAllowed,
       expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /transactions", Type: "about:blank",})[:]),
-      mockTransactions: transactions,
-      mockGetTransactionsError: nil,
-      mockDBInitialize: true,
-      mockDBInitializeCheck: true,
     },
    }
   for _, test := range tests {
     test := test
-    mockStore := db.NewMockStore()
-    mockStore.On("GetTransactions").Return(test.mockTransactions, test.mockGetTransactionsError).Once()
-    mockStore.On("InitializeDatabase").Return(test.mockDBInitialize).Once()
-    mockStore.On("DatabaseInitialized").Return(test.mockDBInitializeCheck).Once()
-    api := NewAPI(mockStore)
     t.Run(test.name, func(t *testing.T) {
       test.handlerFunc(test.out, test.in)
       if test.out.Code != test.expectedStatus {
