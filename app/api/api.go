@@ -147,7 +147,7 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
   switch r.Method {
   case http.MethodGet:
     if api.databaseInitialized(){
-      params = r.URL.Query()
+      params := r.URL.Query()
       if len(params) == 0 {
         transactions, err := api.store.GetTransactions()
         if err != nil {
@@ -163,7 +163,7 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
         outputString := "Query contents: \n"
         for k, v := range params {
           keyString := fmt.Sprintf("Key: %s, Value: %s\n", k, v)
-          outputString = output_string + keyString
+          outputString = outputString + keyString
         }
         api.logger.Println(outputString)
       }

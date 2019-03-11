@@ -123,7 +123,7 @@ func TestEndpointsBadDB(t *testing.T) {
   mockStore.On("GetTransactions").Return(transactions, nil).Once()
   mockStore.On("InitializeDatabase").Return(false).Once()
   mockStore.On("DatabaseInitialized").Return(false).Once()
-  api := NewAPI(mockStore)
+  api := NewAPI(mockStore, nil)
   tests := []struct {
     name string
     in *http.Request
