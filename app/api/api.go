@@ -153,7 +153,8 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
         if err != nil {
           panic(err) 
         }
-        b, err := json.Marshal(transactions)
+        json_bytes, err := json.Marshal(transactions)
+        b = json_bytes
         if err != nil {
           panic(err) 
         }
