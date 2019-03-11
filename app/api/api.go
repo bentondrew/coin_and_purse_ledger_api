@@ -14,7 +14,7 @@ type API struct {
 }
 
 
-type responseGenerator func(w http.ResponseWriter, r *http.Request) (int, []byte, error)
+type responseGenerator func(w http.ResponseWriter, r *http.Request) (int, []byte)
 
 
 func NewApi(store db.DataStore) *API {
@@ -24,29 +24,37 @@ func NewApi(store db.DataStore) *API {
 }
 
 
-func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err error) (int, []byte, error) {
+func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err interface{}) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: fmt.Sprintf("%s", err), Type: "about:blank",})
-  return http.StatusInternalServerError, b, err
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusInternalServerError, b
 }
 
 
-func (api *API) errorRecovery(next responseGenerator) func(w http.ResponseWriter, req *http.Request) (int, []byte) {
+func (api *API) errorRecovery(next responseGenerator) responseGenerator {
   return func(w http.ResponseWriter, req *http.Request) (int, []byte) {
-    statusCode, body, err := next(w, req)
-    if err != nil {
-      statusCode, body, err := api.handleServerError(w, req, err)
-      if err != nil {
-        // handleServerError uses json marshal. This second error catch manually overrides so that
-        // there is a definite exit point.
-        error_string := fmt.Sprintf("%s", err)
-        json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
-        body := []byte(json_string)
-        statusCode := http.StatusInternalServerError
+    defer func() {
+      if rec := recover(); r != nil {
+        defer func() {
+          if rec := recover(); r != nil {
+            // handleServerError uses json marshal. This second error catch manually overrides so that
+            // there is a definite exit point.
+            w.Header().Set("Content-Type", "application/problem+json")
+            error_string := fmt.Sprintf("%s", rec)
+            json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
+            body := []byte(json_string)
+            statusCode := http.StatusInternalServerError
+            return statusCode, body
+          }
+        }()
+        statusCode, body := api.handleServerError(w, req, rec)
         return statusCode, body
       }
-      return statusCode, body
-    }
+    }()
+    statusCode, body := next(w, req)
     return statusCode, body
   }
 }
@@ -70,10 +78,13 @@ func (api *API) apiHandlerFunc(next responseGenerator) http.HandlerFunc {
 }
 
 
-func (api *API) handleNotFound(w http.ResponseWriter, r *http.Request) (int, []byte, error) {
+func (api *API) handleNotFound(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 404, Title: "Not Found", Detail: fmt.Sprintf("%s not found", r.URL), Type: "about:blank",})
-  return http.StatusNotFound, b, err
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusNotFound, b
 }
 
 
@@ -82,20 +93,26 @@ func (api *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (api *API) handleMethodNotAllowed(w http.ResponseWriter, r *http.Request) (int, []byte, error) {
+func (api *API) handleMethodNotAllowed(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: fmt.Sprintf("%s is not supported by %s", r.Method, r.URL), Type: "about:blank",})
-  return http.StatusMethodNotAllowed, b, err
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusMethodNotAllowed, b
 }
 
 
-func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte, error) {
+func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
   case http.MethodGet:
     w.Header().Set("Content-Type", "application/json")
     w.Header().Set("Access-Control-Allow-Origin", "*")
     b, err := json.Marshal("Hello World!")
-    return http.StatusOK, b, err
+    if err != nil {
+      panic(err) 
+    }
+    return http.StatusOK, b
   default:
     return api.handleMethodNotAllowed(w, r)
   }
@@ -107,16 +124,19 @@ func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte, error) {
+func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
   case http.MethodGet:
     transactions, err := api.store.GetTransactions()
     if err != nil {
-      return 0, []byte(""), err 
+      panic(err) 
     }
     w.Header().Set("Content-Type", "application/json")
     b, err := json.Marshal(transactions)
-    return http.StatusOK, b, err
+    if err != nil {
+      panic(err) 
+    }
+    return http.StatusOK, b
   default:
     return api.handleMethodNotAllowed(w, r)
   }
