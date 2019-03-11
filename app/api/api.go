@@ -9,6 +9,10 @@ import (
 )
 
 
+/*
+API struct stores the data store used for the API endpoints.
+Also implements the methods for the API endpoints.
+*/
 type API struct {
   store db.DataStore
 }
@@ -17,7 +21,12 @@ type API struct {
 type responseGenerator func(w http.ResponseWriter, r *http.Request) (int, []byte)
 
 
-func NewApi(store db.DataStore) *API {
+/*
+Takes the provided data store and returns
+an initialized API struct with the data
+store populated.
+*/
+func NewAPI(store db.DataStore) *API {
   return &API {
     store: store,
   }
@@ -35,26 +44,24 @@ func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err in
 
 
 func (api *API) errorRecovery(next responseGenerator) responseGenerator {
-  return func(w http.ResponseWriter, req *http.Request) (int, []byte) {
+  return func(w http.ResponseWriter, req *http.Request) (statusCode int, body []byte) {
     defer func() {
-      if rec := recover(); r != nil {
+      if rec := recover(); rec != nil {
         defer func() {
-          if rec := recover(); r != nil {
+          if rec := recover(); rec != nil {
             // handleServerError uses json marshal. This second error catch manually overrides so that
             // there is a definite exit point.
             w.Header().Set("Content-Type", "application/problem+json")
-            error_string := fmt.Sprintf("%s", rec)
-            json_string := `{"status": 500, "title": "Internal Server Error", "detail": "` + error_string + `", "type": "about:blank"}`
-            body := []byte(json_string)
-            statusCode := http.StatusInternalServerError
-            return statusCode, body
+            errorString := fmt.Sprintf("%s", rec)
+            jsonString := `{"status": 500, "title": "Internal Server Error", "detail": "` + errorString + `", "type": "about:blank"}`
+            body = []byte(jsonString)
+            statusCode = http.StatusInternalServerError
           }
         }()
-        statusCode, body := api.handleServerError(w, req, rec)
-        return statusCode, body
+        statusCode, body = api.handleServerError(w, req, rec)
       }
     }()
-    statusCode, body := next(w, req)
+    statusCode, body = next(w, req)
     return statusCode, body
   }
 }
