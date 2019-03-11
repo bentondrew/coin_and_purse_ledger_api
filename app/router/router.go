@@ -38,5 +38,5 @@ func (rtr *Router) EndpointLogger(next http.HandlerFunc) http.HandlerFunc {
 func (rtr *Router) SetupRoutes() {
   rtr.Mux.HandleFunc("/", rtr.EndpointLogger(rtr.api.HandleDefault))
   rtr.Mux.HandleFunc(rtr.baseUrl + "/hello", rtr.EndpointLogger(rtr.api.HandleHello))
-  rtr.Mux.HandleFunc(rtr.baseUrl + "/transactions", rtr.EndpointLogger(rtr.api.HandleGetAllTransactions))
+  rtr.Mux.HandleFunc(rtr.baseUrl + "/transactions", rtr.EndpointLogger(rtr.api.HandleTransactions))
 }

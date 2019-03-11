@@ -140,7 +140,7 @@ func (api *API) databaseInitialized() (initialized bool) {
 }
 
 
-func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
+func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
   case http.MethodGet:
     if api.databaseInitialized(){
@@ -163,6 +163,6 @@ func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *h
 }
 
 
-func (api *API) HandleGetAllTransactions(w http.ResponseWriter, r *http.Request) {
-  api.apiHandlerFunc(api.getAllTransactionsResponseGeneration)(w, r)
+func (api *API) HandleTransactions(w http.ResponseWriter, r *http.Request) {
+  api.apiHandlerFunc(api.transactionsResponseGeneration)(w, r)
 }

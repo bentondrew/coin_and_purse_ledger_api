@@ -13,11 +13,11 @@ DB Mocking:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.25 .
+docker build -t coin_and_purse_ledger_service:0.0.26 .
 ```
 
 ## Image run command
 
 ```Bash
-docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.25
+docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.26
 ```
