@@ -35,6 +35,8 @@ func TestEndpoints(t *testing.T) {
   transactions = append(transactions, &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}) 
   mockStore := db.NewMockStore()
   mockStore.On("GetTransactions").Return(transactions, nil).Once()
+  mockStore.On("InitializeDatabase").Return(true).Once()
+  mockStore.On("DatabaseInitialized").Return(true).Once()
   api := NewAPI(mockStore)
   tests := []struct {
     name string

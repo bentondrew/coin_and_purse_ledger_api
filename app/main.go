@@ -11,19 +11,23 @@ import (
 
 
 var (
-  version = "0.0.24"
+  version = "0.0.25"
 )
 
 
 func main() {
-  database := db.InitPostgresDatabase()
+  logger := logger.NewLogger()
+  database := db.NewPostgresDatabase(logger)
   defer func() {
     database.Close()
   }()
-  database.CreateTables()
-  database.NewTransactions()
+  if database.DatabaseInitialized() {
+    database.NewTransactions()
+  } else {
+    logger.Println("Unable to add example transactions to database " +
+                   "as the database wasn't successfully initialized.")
+  }
   api := api.NewAPI(database)
-  logger := logger.NewLogger()
   router := router.NewRouter(logger, "/ledger/v1.0.0", api)
   router.SetupRoutes()
   server := server.NewServer(router.Mux)

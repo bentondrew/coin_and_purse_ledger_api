@@ -17,6 +17,18 @@ func NewMockStore() *MockStore {
 }
 
 
+func (ms *MockStore) InitializeDatabase() bool {
+  rets := ms.Called()
+  return rets.Bool(0)
+}
+
+
+func (ms *MockStore) DatabaseInitialized() bool {
+  rets := ms.Called()
+  return rets.Bool(0)
+}
+
+
 func (ms *MockStore) CreateTransaction(transaction *transaction.Transaction) error {
   rets:= ms.Called(transaction)
   return rets.Error(0)

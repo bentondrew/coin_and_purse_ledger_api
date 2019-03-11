@@ -131,21 +131,34 @@ func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func (api *API) databaseInitialized() (initialized bool) {
+  initialized = api.store.DatabaseInitialized()
+  if !initialized {
+    initialized = api.store.InitializeDatabase()
+  }
+  return initialized
+}
+
+
 func (api *API) getAllTransactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
   case http.MethodGet:
-    transactions, err := api.store.GetTransactions()
-    if err != nil {
-      panic(err) 
-    }
-    w.Header().Set("Content-Type", "application/json")
-    b, err := json.Marshal(transactions)
-    if err != nil {
-      panic(err) 
-    }
-    return http.StatusOK, b
-  default:
-    return api.handleMethodNotAllowed(w, r)
+    if api.databaseInitialized(){
+      transactions, err := api.store.GetTransactions()
+      if err != nil {
+        panic(err) 
+      }
+      w.Header().Set("Content-Type", "application/json")
+      b, err := json.Marshal(transactions)
+      if err != nil {
+        panic(err) 
+      }
+      return http.StatusOK, b
+      } else {
+        panic(NewAPIError("Cannot get transactions; database not initialized."))
+      }
+    default:
+      return api.handleMethodNotAllowed(w, r)
   }
 }
 

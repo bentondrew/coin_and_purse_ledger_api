@@ -7,6 +7,8 @@ import (
 
 
 type DataStore interface {
+  InitializeDatabase() bool
+  DatabaseInitialized() bool
   CreateTransaction(transaction *transaction.Transaction) error
   GetTransactions() ([]*transaction.Transaction, error)
 }
