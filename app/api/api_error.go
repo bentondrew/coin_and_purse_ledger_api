@@ -21,6 +21,6 @@ func NewAPIError(err string) *APIError {
 }
 
 
-func (apie *APIError) Error() {
+func (apie *APIError) Error() string {
     return fmt.Sprintf("%v: %v", apie.When, apie.What)
 }
