@@ -134,52 +134,38 @@ func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (api *API) databaseInitialized() (initialized bool) {
-  initialized = api.store.DatabaseInitialized()
-  if !initialized {
-    initialized = api.store.InitializeDatabase()
-  }
-  return initialized
-}
-
-
 func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
   switch r.Method {
   case http.MethodGet:
-    if api.databaseInitialized(){
-      params := r.URL.Query()
-      if len(params) == 0 {
-        transactions, err := api.store.GetTransactions()
-        if err != nil {
-          panic(err) 
-        }
-        json_bytes, err := json.Marshal(transactions)
-        b = json_bytes
-        if err != nil {
-          panic(err) 
-        }
-        status = http.StatusOK
-      } else
-      {
-        outputString := "Query contents: \n"
-        for k, v := range params {
-          keyString := fmt.Sprintf("Key: %s, Value: %s\n", k, v)
-          outputString = outputString + keyString
-        }
-        api.logger.Println(outputString)
-        json_bytes, err := json.Marshal(outputString)
-        b = json_bytes
-        if err != nil {
-          panic(err) 
-        }
-        status = http.StatusOK
-
+    params := r.URL.Query()
+    if len(params) == 0 {
+      transactions, err := api.store.GetTransactions()
+      if err != nil {
+        panic(err) 
       }
-      w.Header().Set("Content-Type", "application/json")
-      return status, b
-    } else {
-      panic(NewAPIError("Cannot get transactions; database not initialized."))
+      json_bytes, err := json.Marshal(transactions)
+      b = json_bytes
+      if err != nil {
+        panic(err) 
+      }
+      status = http.StatusOK
+    } else
+    {
+      outputString := "Query contents: \n"
+      for k, v := range params {
+        keyString := fmt.Sprintf("Key: %s, Value: %s\n", k, v)
+        outputString = outputString + keyString
+      }
+      api.logger.Println(outputString)
+      json_bytes, err := json.Marshal(outputString)
+      b = json_bytes
+      if err != nil {
+        panic(err) 
+      }
+      status = http.StatusOK
     }
+    w.Header().Set("Content-Type", "application/json")
+    return status, b
   default:
     return api.handleMethodNotAllowed(w, r)
   }

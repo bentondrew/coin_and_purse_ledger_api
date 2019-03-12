@@ -13,14 +13,11 @@ import (
 
 /*
 Struct which contains the Postgres DB connection pool.
-Contains the logger for logging in the struct methods and
-and a bool to indicate if the DB has been initialized
-correctly.
+Contains the logger for logging in the struct methods.
 */
 type Postgresdb struct {
   logger *log.Logger
   gormdb *gorm.DB
-  initialized bool
 }
 
 
@@ -67,18 +64,16 @@ func createTables(gormdb *gorm.DB) {
 }
 
 
-func initializeDatabase(logger *log.Logger) (gormDB *gorm.DB, initialized bool) {
+func initializeDatabase(logger *log.Logger) (gormDB *gorm.DB) {
   defer func() {
     if rec := recover(); rec != nil {
       logger.Printf("Unable to initialize Postgres database: %s.\n", rec)
-      initialized = false
       gormDB = nil
     }
   }()
-  initialized = true
   gormDB = openPostgresDatabase()
   createTables(gormDB)
-  return gormDB, initialized
+  return gormDB
 }
 
 
@@ -90,11 +85,10 @@ the transactions table. If unable to, sets the initialized
 variable to false.
 */
 func NewPostgresDatabase(logger *log.Logger) *Postgresdb {
-  gormDB, initialized := initializeDatabase(logger)
+  gormDB := initializeDatabase(logger)
   return &Postgresdb{
     logger: logger,
     gormdb: gormDB,
-    initialized: initialized,
   }
 }
 
@@ -116,27 +110,36 @@ func (p *Postgresdb) NewTransactions() {
 }
 
 
-func (p *Postgresdb) DatabaseInitialized() bool {
-  return p.initialized
-}
-
-
-func (p *Postgresdb) InitializeDatabase() bool {
-  gormDB, initialized := initializeDatabase(p.logger)
-  p.gormdb = gormDB
-  p.initialized = initialized
-  return initialized
+func (p *Postgresdb) checkDatabase() error {
+  if p.gormdb == nil {
+    p.gormdb = initializeDatabase(p.logger)
+  }
+  if p.gormdb != nil{
+    return nil
+  } else {
+    return NewStoreError("Database not initialized.")
+  }
 }
 
 
 func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) error {
-  result := p.gormdb.Create(transaction)
-  return result.Error
+  err := p.checkDatabase()
+  if err != nil {
+    return err 
+  } else {
+    result := p.gormdb.Create(transaction)
+    return result.Error
+  }
 }
 
 
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
-  var transactions []*transaction.Transaction
-  result := p.gormdb.Find(&transactions)
-  return transactions, result.Error
+  err := p.checkDatabase()
+  if err != nil {
+    return nil, err 
+  } else {
+    var transactions []*transaction.Transaction
+    result := p.gormdb.Find(&transactions)
+    return transactions, result.Error
+  }
 }
