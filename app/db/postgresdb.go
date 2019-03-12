@@ -104,7 +104,7 @@ func (p *Postgresdb) DatabaseInitialized() (initialized bool) {
   if p.gormdb == nil {
     initialized = false
   } else {
-    if gormdb.HasTable(&transaction.Transaction{}) {
+    if p.gormdb.HasTable(&transaction.Transaction{}) {
       initialized = true
     } else {
       initialized = false
