@@ -7,6 +7,8 @@ Server structure resources:
 - [Go server components](https://medium.com/statuscode/how-i-write-go-http-services-after-seven-years-37c208122831)
 DB Mocking:
 - [Adding DB to web application](https://www.sohamkamani.com/blog/2017/10/18/golang-adding-database-to-web-application/)
+HTTP in Go:
+- [What to know about HTTP in Go](https://scene-si.org/2017/09/27/things-to-know-about-http-in-go/)
 
 
 ## Docker image build command
