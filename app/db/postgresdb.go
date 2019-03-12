@@ -100,6 +100,20 @@ func (p *Postgresdb) Close() {
 }
 
 
+func (p *Postgresdb) DatabaseInitialized() (initialized bool) {
+  if p.gormdb == nil {
+    initialized = false
+  } else {
+    if gormdb.HasTable(&transaction.Transaction{}) {
+      initialized = true
+    } else {
+      initialized = false
+    }
+  }
+  return initialized
+}
+
+
 func (p *Postgresdb) NewTransactions() {
   if err := p.CreateTransaction(&transaction.Transaction{Timestamp: time.Now(), Amount: 10}); err != nil {
     panic(err) 
