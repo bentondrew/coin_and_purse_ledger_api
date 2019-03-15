@@ -5,6 +5,9 @@ import (
   "encoding/json"
   "fmt"
   "log"
+  "io"
+  "ioutil"
+  "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
 )
@@ -105,11 +108,31 @@ func (api *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
 
 func (api *API) handleMethodNotAllowed(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
-  b, err := json.Marshal(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: fmt.Sprintf("%s is not supported by %s", r.Method, r.URL), Type: "about:blank",})
+  b, err := json.Marshal(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: fmt.Sprintf("Method %s is not supported by %s", r.Method, r.URL), Type: "about:blank",})
   if err != nil {
     panic(err) 
   }
   return http.StatusMethodNotAllowed, b
+}
+
+
+func (api *API) handleBadRequestMissingHeaderField(w http.ResponseWriter, r *http.Request, mf string) (int, []byte) {
+  w.Header().Set("Content-Type", "application/problem+json")
+  b, err := json.Marshal(problem.Problem{Status: 400, Title: "Bad Request", Detail: fmt.Sprintf("Field %s is missing in request header", mf), Type: "about:blank",})
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusBadRequest, b
+}
+
+
+func (api *API) handleUnsupportedMediaType(w http.ResponseWriter, r *http.Request) (int, []byte) {
+  w.Header().Set("Content-Type", "application/problem+json")
+  b, err := json.Marshal(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: fmt.Sprintf("Content type %s is not supported by %s", r.Header.Get("Content-Type"), r.URL), Type: "about:blank",})
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusUnsupportedMediaType, b
 }
 
 
@@ -134,38 +157,82 @@ func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
+  params := r.URL.Query()
+  if len(params) == 0 {
+    transactions, err := api.store.GetTransactions()
+    if err != nil {
+      panic(err) 
+    }
+    json_bytes, err := json.Marshal(transactions)
+    if err != nil {
+      panic(err) 
+    }
+    b = json_bytes
+    status = http.StatusOK
+  } else
+  {
+    outputString := "Query contents: \n"
+    for k, v := range params {
+      keyString := fmt.Sprintf("Key: %s, Value: %s\n", k, v)
+      outputString = outputString + keyString
+    }
+    api.logger.Println(outputString)
+    json_bytes, err := json.Marshal(outputString)
+    if err != nil {
+      panic(err) 
+    }
+    b = json_bytes
+    status = http.StatusOK
+  }
+  w.Header().Set("Content-Type", "application/json")
+  return status, b
+}
+
+
+func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
+  contentTypeHeaderKey := "Content-Type"
+  contentType, ok := r.Header[contentTypeHeaderKey]
+  if ok {
+    if contentType == "application/json" {
+      var transaction transaction.Transaction
+      req_body, err_r := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
+      if err_r != nil {
+        panic(err_r) 
+      }
+      if err := r.Body.Close(); err != nil {
+        panic(err)
+      }
+      if err_um := json.Unmarshal(req_body, &transaction); err_um != nil {
+        panic(err_um)
+      }
+      c_trans, err_ct := api.store.CreateTransaction(&transaction)
+      if err_ct != nil {
+        panic(err_ct)
+      }
+      json_bytes, err_jm := json.Marshal(c_trans)
+      if err_jm != nil {
+        panic(err_jm)
+      }
+      b = json_bytes
+      w.Header().Set("Content-Type", "application/json")
+      w.Header().Set("Location", fmt.Sprintf("/transactions/%s", c_trans.ID))
+      return http.StatusCreated, b
+    } else {
+      return api.handleUnsupportedMediaType(w, r)
+    }
+  } else {
+    return api.handleBadRequestMissingHeaderField(w, r, contentTypeHeaderKey)
+  }
+}
+
+
 func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
   switch r.Method {
   case http.MethodGet:
-    params := r.URL.Query()
-    if len(params) == 0 {
-      transactions, err := api.store.GetTransactions()
-      if err != nil {
-        panic(err) 
-      }
-      json_bytes, err := json.Marshal(transactions)
-      b = json_bytes
-      if err != nil {
-        panic(err) 
-      }
-      status = http.StatusOK
-    } else
-    {
-      outputString := "Query contents: \n"
-      for k, v := range params {
-        keyString := fmt.Sprintf("Key: %s, Value: %s\n", k, v)
-        outputString = outputString + keyString
-      }
-      api.logger.Println(outputString)
-      json_bytes, err := json.Marshal(outputString)
-      b = json_bytes
-      if err != nil {
-        panic(err) 
-      }
-      status = http.StatusOK
-    }
-    w.Header().Set("Content-Type", "application/json")
-    return status, b
+    return api.transactionGet(w, r)
+  case htt.MethodPost:
+    return api.transactionPost(w, r)
   default:
     return api.handleMethodNotAllowed(w, r)
   }

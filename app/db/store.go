@@ -7,6 +7,6 @@ import (
 
 
 type DataStore interface {
-  CreateTransaction(transaction *transaction.Transaction) error
+  CreateTransaction(transaction *transaction.Transaction) (*transaction.Transaction, error)
   GetTransactions() ([]*transaction.Transaction, error)
 }

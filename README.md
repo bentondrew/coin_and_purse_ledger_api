@@ -15,11 +15,11 @@ HTTP in Go:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.27 .
+docker build -t coin_and_purse_ledger_service:0.0.28 .
 ```
 
 ## Image run command
 
 ```Bash
-docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.27
+docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.28
 ```

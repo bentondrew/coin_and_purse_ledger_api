@@ -136,13 +136,13 @@ func (p *Postgresdb) checkDatabase() error {
 }
 
 
-func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) error {
+func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (*transaction.Transaction, error) {
   err := p.checkDatabase()
   if err != nil {
     return err 
   } else {
     result := p.gormdb.Create(transaction)
-    return result.Error
+    return result.Value, result.Error
   }
 }
 

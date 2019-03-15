@@ -30,11 +30,14 @@ func TestEndpointsGoodDB(t *testing.T) {
   if err != nil {
     panic(err) 
   }
+  transaction1 := &transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}
+  transaction2 := &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}
   transactions := []*transaction.Transaction{}
-  transactions = append(transactions, &transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,})
-  transactions = append(transactions, &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}) 
+  transactions = append(transactions, transaction1)
+  transactions = append(transactions, transaction2) 
   mockStore := db.NewMockStore()
   mockStore.On("GetTransactions").Return(transactions, nil).Once()
+  mockStore.On("CreateTransaction").Return(transaction1, nil).Once()
   api := NewAPI(mockStore, nil)
   tests := []struct {
     name string
@@ -77,12 +80,12 @@ func TestEndpointsGoodDB(t *testing.T) {
       expectedBody: string(generateJsonByteArray(transactions)[:]),
     },
     {
-      name: "transactions_post",
-      in: httptest.NewRequest("POST", "/transactions", nil),
+      name: "transactions_delete",
+      in: httptest.NewRequest("DELETE", "/transactions", nil),
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /transactions", Type: "about:blank",})[:]),
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "DELETE is not supported by /transactions", Type: "about:blank",})[:]),
     },
    }
   for _, test := range tests {
