@@ -17,9 +17,9 @@ func NewMockStore() *MockStore {
 }
 
 
-func (ms *MockStore) CreateTransaction(transaction *transaction.Transaction) (*transaction.Transaction, error) {
+func (ms *MockStore) CreateTransaction(transaction *transaction.Transaction) (error) {
   rets:= ms.Called(transaction)
-  return rets.Get(0).(*transaction.Transaction), rets.Error(1)
+  return rets.Error(0)
 }
 
 

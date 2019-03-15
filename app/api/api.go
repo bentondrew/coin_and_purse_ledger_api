@@ -205,17 +205,16 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
       if err_um := json.Unmarshal(req_body, &transaction); err_um != nil {
         panic(err_um)
       }
-      c_trans, err_ct := api.store.CreateTransaction(&transaction)
-      if err_ct != nil {
+      if err_ct := api.store.CreateTransaction(&transaction); err_ct != nil {
         panic(err_ct)
       }
-      json_bytes, err_jm := json.Marshal(c_trans)
+      json_bytes, err_jm := json.Marshal(transaction)
       if err_jm != nil {
         panic(err_jm)
       }
       b = json_bytes
       w.Header().Set("Content-Type", "application/json")
-      w.Header().Set("Location", fmt.Sprintf("/transactions/%s", c_trans.ID))
+      w.Header().Set("Location", fmt.Sprintf("/transactions/%s", transaction.ID))
       return http.StatusCreated, b
     } else {
       return api.handleUnsupportedMediaType(w, r)
