@@ -6,7 +6,6 @@ import (
   "fmt"
   "log"
   "io"
-  "ioutil"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
@@ -196,7 +195,7 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
   if ok {
     if contentType == "application/json" {
       var transaction transaction.Transaction
-      req_body, err_r := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
+      req_body, err_r := io.ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
       if err_r != nil {
         panic(err_r) 
       }
