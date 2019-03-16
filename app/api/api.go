@@ -6,6 +6,7 @@ import (
   "fmt"
   "log"
   "io"
+  "io/ioutil"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
@@ -125,6 +126,16 @@ func (api *API) handleBadRequestMissingHeaderField(w http.ResponseWriter, r *htt
 }
 
 
+func (api *API) handleBadRequestMissingHeaderFieldContent(w http.ResponseWriter, r *http.Request, field string) (int, []byte) {
+  w.Header().Set("Content-Type", "application/problem+json")
+  b, err := json.Marshal(problem.Problem{Status: 400, Title: "Bad Request", Detail: fmt.Sprintf("Field %s content is empty in request header", field), Type: "about:blank",})
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusBadRequest, b
+}
+
+
 func (api *API) handleUnsupportedMediaType(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: fmt.Sprintf("Content type %s is not supported by %s", r.Header.Get("Content-Type"), r.URL), Type: "about:blank",})
@@ -193,31 +204,35 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
   contentTypeHeaderKey := "Content-Type"
   contentType, ok := r.Header[contentTypeHeaderKey]
   if ok {
-    if contentType == "application/json" {
-      var transaction transaction.Transaction
-      req_body, err_r := io.ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
-      if err_r != nil {
-        panic(err_r) 
+    if len(contentType) == 1 {
+      if contentType[0] == "application/json" {
+        var transaction transaction.Transaction
+        reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
+        if errR != nil {
+          panic(errR) 
+        }
+        if err := r.Body.Close(); err != nil {
+          panic(err)
+        }
+        if errUm := json.Unmarshal(reqBody, &transaction); errUm != nil {
+          panic(errUm)
+        }
+        if err_ct := api.store.CreateTransaction(&transaction); err_ct != nil {
+          panic(err_ct)
+        }
+        json_bytes, errJm := json.Marshal(transaction)
+        if errJm != nil {
+          panic(errJm)
+        }
+        b = json_bytes
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Location", fmt.Sprintf("/transactions/%s", transaction.ID))
+        return http.StatusCreated, b
+      } else {
+        return api.handleUnsupportedMediaType(w, r)
       }
-      if err := r.Body.Close(); err != nil {
-        panic(err)
-      }
-      if err_um := json.Unmarshal(req_body, &transaction); err_um != nil {
-        panic(err_um)
-      }
-      if err_ct := api.store.CreateTransaction(&transaction); err_ct != nil {
-        panic(err_ct)
-      }
-      json_bytes, err_jm := json.Marshal(transaction)
-      if err_jm != nil {
-        panic(err_jm)
-      }
-      b = json_bytes
-      w.Header().Set("Content-Type", "application/json")
-      w.Header().Set("Location", fmt.Sprintf("/transactions/%s", transaction.ID))
-      return http.StatusCreated, b
     } else {
-      return api.handleUnsupportedMediaType(w, r)
+      return api.handleBadRequestMissingHeaderFieldContent(w, r, contentTypeHeaderKey)
     }
   } else {
     return api.handleBadRequestMissingHeaderField(w, r, contentTypeHeaderKey)
@@ -229,7 +244,7 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
   switch r.Method {
   case http.MethodGet:
     return api.transactionGet(w, r)
-  case htt.MethodPost:
+  case http.MethodPost:
     return api.transactionPost(w, r)
   default:
     return api.handleMethodNotAllowed(w, r)
