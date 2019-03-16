@@ -61,7 +61,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleHello,
       expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "POST is not supported by /hello", Type: "about:blank",})[:]),
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method POST is not supported by /hello", Type: "about:blank",})[:]),
     },
     {
       name: "NotFound",
@@ -85,7 +85,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "DELETE is not supported by /transactions", Type: "about:blank",})[:]),
+      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method DELETE is not supported by /transactions", Type: "about:blank",})[:]),
     },
    }
   for _, test := range tests {
