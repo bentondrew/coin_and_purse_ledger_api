@@ -226,7 +226,7 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
         }
         b = json_bytes
         w.Header().Set("Content-Type", "application/json")
-        w.Header().Set("Location", fmt.Sprintf("/transactions/%s", transaction.ID))
+        w.Header().Set("Location", fmt.Sprintf("/transactions/%d", transaction.ID))
         return http.StatusCreated, b
       } else {
         return api.handleUnsupportedMediaType(w, r)
