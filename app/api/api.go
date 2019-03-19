@@ -7,6 +7,9 @@ import (
   "log"
   "io"
   "io/ioutil"
+  "time"
+  "strings"
+  "strconv"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
@@ -201,12 +204,18 @@ func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status i
 
 
 func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
+  /*
+  TODO:
+    Need to write tests for this function.
+    Need to convert time from json to go.
+    Need to fail on required json fields (currently amount is set to zero when
+      amount is missing in request).
+  */
   contentTypeHeaderKey := "Content-Type"
   contentType, ok := r.Header[contentTypeHeaderKey]
   if ok {
     if len(contentType) == 1 {
       if contentType[0] == "application/json" {
-        var transaction transaction.Transaction
         reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
         if errR != nil {
           panic(errR) 
@@ -214,11 +223,39 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
         if err := r.Body.Close(); err != nil {
           panic(err)
         }
-        if errUm := json.Unmarshal(reqBody, &transaction); errUm != nil {
+        var stringJSON map[string]string
+        if errUm := json.Unmarshal(reqBody, &stringJSON); errUm != nil {
           panic(errUm)
         }
-        if err_ct := api.store.CreateTransaction(&transaction); err_ct != nil {
-          panic(err_ct)
+        var transaction transaction.Transaction
+        foundTime := false
+        foundAmount := false
+        for k, v := range stringJSON {
+          if strings.ToLower(k) == "timestamp" {
+            tmstmp, err := time.Parse(time.RFC3339, v)
+            if err != nil {
+              panic(err) 
+            }
+            transaction.Timestamp = tmstmp
+            foundTime = true
+          }
+          if strings.ToLower(k) == "amount" {
+            amount, err := strconv.ParseFloat(v, 64)
+            if err != nil {
+              panic(err) 
+            }
+            transaction.Amount = amount
+            foundAmount = true
+          }
+        }
+        if !foundTime {
+          panic(NewAPIError("Timestamp for provided transaction not found."))
+        }
+        if !foundAmount {
+          panic(NewAPIError("Amount for provided transaction not found."))
+        }
+        if errCt := api.store.CreateTransaction(&transaction); errCt != nil {
+          panic(errCt)
         }
         json_bytes, errJm := json.Marshal(transaction)
         if errJm != nil {

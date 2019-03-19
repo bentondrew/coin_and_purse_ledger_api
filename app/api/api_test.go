@@ -6,6 +6,7 @@ import (
   "net/http/httptest"
   "testing"
   "encoding/json"
+  "github.com/google/uuid"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
@@ -30,8 +31,16 @@ func TestEndpointsGoodDB(t *testing.T) {
   if err != nil {
     panic(err) 
   }
-  transaction1 := &transaction.Transaction{ID: 1, Timestamp: t1, Amount: 10,}
-  transaction2 := &transaction.Transaction{ID: 2, Timestamp: t2, Amount: -5,}
+  id1, err := uuid.NewV4()
+  if err != nil {
+    return err 
+  }
+  id2, err := uuid.NewV4()
+  if err != nil {
+    return err 
+  }
+  transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+  transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
   transactions := []*transaction.Transaction{}
   transactions = append(transactions, transaction1)
   transactions = append(transactions, transaction2) 

@@ -7,6 +7,7 @@ import (
   "log"
   "github.com/jinzhu/gorm"
   _ "github.com/jinzhu/gorm/dialects/postgres"
+  "github.com/google/uuid"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
@@ -141,8 +142,14 @@ func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (er
   if err != nil {
     return err 
   } else {
-    result := p.gormdb.Create(transaction)
-    return result.Error
+    id, errU := uuid.NewV4()
+    if errU != nil {
+      return errU 
+    } else {
+      transaction.ID = id
+      result := p.gormdb.Create(transaction)
+      return result.Error
+    }
   }
 }
 
