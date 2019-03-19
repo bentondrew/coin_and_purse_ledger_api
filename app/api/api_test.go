@@ -31,11 +31,11 @@ func TestEndpointsGoodDB(t *testing.T) {
   if err != nil {
     panic(err) 
   }
-  id1, err := uuid.NewV4()
+  id1, err := uuid.New()
   if err != nil {
     return err 
   }
-  id2, err := uuid.NewV4()
+  id2, err := uuid.New()
   if err != nil {
     return err 
   }

@@ -142,7 +142,7 @@ func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (er
   if err != nil {
     return err 
   } else {
-    id, errU := uuid.NewV4()
+    id, errU := uuid.New()
     if errU != nil {
       return errU 
     } else {
