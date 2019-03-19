@@ -137,22 +137,21 @@ func (p *Postgresdb) checkDatabase() error {
 }
 
 
-func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (error) {
+func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (err error) {
   // To catch panic from uuid New
   defer func() {
     if rec := recover(); rec != nil {
-      return rec
+      err = rec
     }
   }()
-  err := p.checkDatabase()
-  if err != nil {
-    return err 
-  } else {
+  err = p.checkDatabase()
+  if err == nil {
     id := uuid.New() 
     transaction.ID = id
     result := p.gormdb.Create(transaction)
-    return result.Error
+    err = result.Error
   }
+  return err
 }
 
 
