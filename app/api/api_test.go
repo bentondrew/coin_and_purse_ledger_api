@@ -31,14 +31,8 @@ func TestEndpointsGoodDB(t *testing.T) {
   if err != nil {
     panic(err) 
   }
-  id1, err := uuid.New()
-  if err != nil {
-    return err 
-  }
-  id2, err := uuid.New()
-  if err != nil {
-    return err 
-  }
+  id1 uuid.New()
+  id2 uuid.New()
   transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
   transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
   transactions := []*transaction.Transaction{}
