@@ -19,7 +19,11 @@ docker build -t coin_and_purse_ledger_service:0.0.28 .
 ```
 
 ## Image run command
+This should primarily be deployed with the docker-compose file in the
+[app repo.](https://github.com/Drewan-Tech/coin_and_purse_app)
 
+Following is an example of a direct run command.
+* Note: This requires a previously deployed network _appnet_.
 ```Bash
 docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.28
 ```
