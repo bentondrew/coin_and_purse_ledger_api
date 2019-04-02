@@ -16,10 +16,8 @@ import (
 )
 
 
-/*
-API struct stores the data store used for the API endpoints.
-Also implements the methods for the API endpoints.
-*/
+/*API struct stores the data store used for the API endpoints.
+Also implements the methods for the API endpoints.*/
 type API struct {
   store db.DataStore
   logger *log.Logger
@@ -29,11 +27,9 @@ type API struct {
 type responseGenerator func(w http.ResponseWriter, r *http.Request) (int, []byte)
 
 
-/*
-Takes the provided data store and returns
+/*NewAPI takes the provided data store and returns
 an initialized API struct with the data
-store populated.
-*/
+store populated.*/
 func NewAPI(store db.DataStore, logger *log.Logger) *API {
   return &API {
     store: store,
@@ -58,8 +54,8 @@ func (api *API) errorRecovery(next responseGenerator) responseGenerator {
       if rec := recover(); rec != nil {
         defer func() {
           if rec := recover(); rec != nil {
-            // handleServerError uses json marshal. This second error catch manually overrides so that
-            // there is a definite exit point.
+            /*handleServerError uses json marshal. This second error catch manually overrides so that
+            there is a definite exit point.*/
             w.Header().Set("Content-Type", "application/problem+json")
             errorString := fmt.Sprintf("%s", rec)
             jsonString := `{"status": 500, "title": "Internal Server Error", "detail": "` + errorString + `", "type": "about:blank"}`
@@ -76,11 +72,9 @@ func (api *API) errorRecovery(next responseGenerator) responseGenerator {
 }
 
 
+/*responseWriter should be used right before any response is sent
+to write the desired header and body to the response.*/
 func (api *API) responseWriter(w http.ResponseWriter, statusCode int, body []byte) {
-  /*
-  This function should be used right before any response is sent
-  to write the desired header and body to the response.
-  */
   w.WriteHeader(statusCode)
   w.Write(body)
 }
@@ -104,6 +98,8 @@ func (api *API) handleNotFound(w http.ResponseWriter, r *http.Request) (int, []b
 }
 
 
+/*HandleDefault is used for returning a general resource not found (404) or a internal
+service error (500) if there is an issue processing the 404.*/
 func (api *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.handleNotFound)(w,r)
 }
@@ -165,6 +161,7 @@ func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) 
 }
 
 
+/*HandleHello is a hello world test endpoint.*/
 func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.helloResponseGeneration)(w, r)
 }
@@ -289,6 +286,7 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
 }
 
 
+/*HandleTransactions is the endpoint for handling transaction requests.*/
 func (api *API) HandleTransactions(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.transactionsResponseGeneration)(w, r)
 }
