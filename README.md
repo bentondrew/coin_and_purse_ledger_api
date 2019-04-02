@@ -1,5 +1,5 @@
 # coin_and_purse_ledger_api
-Service which provides the ledger functions.
+Service which provides the ledger API.
 
 Repo structure resources:
 - [Go best practices](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
