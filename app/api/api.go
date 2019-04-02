@@ -174,11 +174,11 @@ func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status i
     if err != nil {
       panic(err) 
     }
-    json_bytes, err := json.Marshal(transactions)
+    jsonBytes, err := json.Marshal(transactions)
     if err != nil {
       panic(err) 
     }
-    b = json_bytes
+    b = jsonBytes
     status = http.StatusOK
   } else
   {
@@ -188,11 +188,11 @@ func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status i
       outputString = outputString + keyString
     }
     api.logger.Println(outputString)
-    json_bytes, err := json.Marshal(outputString)
+    jsonBytes, err := json.Marshal(outputString)
     if err != nil {
       panic(err) 
     }
-    b = json_bytes
+    b = jsonBytes
     status = http.StatusOK
   }
   w.Header().Set("Content-Type", "application/json")
@@ -254,11 +254,11 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
         if errCt := api.store.CreateTransaction(&transaction); errCt != nil {
           panic(errCt)
         }
-        json_bytes, errJm := json.Marshal(transaction)
+        jsonBytes, errJm := json.Marshal(transaction)
         if errJm != nil {
           panic(errJm)
         }
-        b = json_bytes
+        b = jsonBytes
         w.Header().Set("Content-Type", "application/json")
         w.Header().Set("Location", fmt.Sprintf("/transactions/%d", transaction.ID))
         return http.StatusCreated, b
