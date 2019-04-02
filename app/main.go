@@ -18,9 +18,7 @@ var (
 func main() {
   logger := logger.NewLogger()
   database := db.NewPostgresDatabase(logger)
-  defer func() {
-    database.Close()
-  }()
+  defer database.Close()
   if database.DatabaseInitialized() {
     database.NewTransactions()
   } else {
