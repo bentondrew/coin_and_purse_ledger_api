@@ -1,5 +1,10 @@
-# coin_and_purse_ledger_api
+# Coin & Purse Ledger API ![MoneyBag](./img/moneybag.png)
+
+## Overview
+
 Service which provides the ledger API.
+
+## Resources
 
 Repo structure resources:
 - [Go best practices](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
@@ -27,3 +32,9 @@ Following is an example of a direct run command.
 ```Bash
 docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_api:0.1.0
 ```
+
+## Versions
+
+| Version | Comment|
+| ---:|:---|
+| 0.1.0 | Get transactions in db and post new transactions with are saved in db. |
