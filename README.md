@@ -1,5 +1,5 @@
-# coin_and_purse_ledger_service
-Service which provides the ledger functions.
+# coin_and_purse_ledger_api
+Service which provides the ledger API.
 
 Repo structure resources:
 - [Go best practices](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
@@ -15,7 +15,7 @@ HTTP in Go:
 
 ### Local build
 ```Bash
-docker build -t coin_and_purse_ledger_service:0.0.28 .
+docker build -t coin_and_purse_ledger_api:0.1.0 .
 ```
 
 ## Image run command
@@ -25,5 +25,5 @@ This should primarily be deployed with the docker-compose file in the
 Following is an example of a direct run command.
 * Note: This requires a previously deployed network _appnet_.
 ```Bash
-docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_service:0.0.28
+docker run --rm --network appnet -p 80:8080 coin_and_purse_ledger_api:0.1.0
 ```
