@@ -262,15 +262,12 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
         w.Header().Set("Content-Type", "application/json")
         w.Header().Set("Location", fmt.Sprintf("/transactions/%d", transaction.ID))
         return http.StatusCreated, b
-      } else {
-        return api.handleUnsupportedMediaType(w, r)
       }
-    } else {
-      return api.handleBadRequestMissingHeaderFieldContent(w, r, contentTypeHeaderKey)
+      return api.handleUnsupportedMediaType(w, r)
     }
-  } else {
-    return api.handleBadRequestMissingHeaderField(w, r, contentTypeHeaderKey)
+    return api.handleBadRequestMissingHeaderFieldContent(w, r, contentTypeHeaderKey)
   }
+  return api.handleBadRequestMissingHeaderField(w, r, contentTypeHeaderKey)
 }
 
 
