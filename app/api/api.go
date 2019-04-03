@@ -211,7 +211,8 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
   contentTypeHeaderKey := "Content-Type"
   contentType, ok := r.Header[contentTypeHeaderKey]
   if ok {
-    if len(contentType) == 1 {
+    if len(contentType) > 0 {
+      /*Currently ignores any options in the content field.*/
       if contentType[0] == "application/json" {
         reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
         if errR != nil {
