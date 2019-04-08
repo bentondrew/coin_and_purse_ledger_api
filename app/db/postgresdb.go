@@ -107,15 +107,6 @@ func (p *Postgresdb) DatabaseInitialized() (initialized bool) {
 	return initialized
 }
 
-func (p *Postgresdb) NewTransactions() {
-	if err := p.CreateTransaction(&transaction.Transaction{Timestamp: time.Now(), Amount: 10}); err != nil {
-		panic(err)
-	}
-	if err := p.CreateTransaction(&transaction.Transaction{Timestamp: time.Now(), Amount: -5}); err != nil {
-		panic(err)
-	}
-}
-
 func (p *Postgresdb) checkDatabase() error {
 	if p.gormdb == nil {
 		p.gormdb = initializeDatabase(p.logger)

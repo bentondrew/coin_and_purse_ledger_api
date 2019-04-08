@@ -19,12 +19,6 @@ func main() {
   logger := logger.NewLogger()
   database := db.NewPostgresDatabase(logger)
   defer database.Close()
-  if database.DatabaseInitialized() {
-    database.NewTransactions()
-  } else {
-    logger.Println("Unable to add example transactions to database " +
-                   "as the database wasn't successfully initialized.")
-  }
   api := api.NewAPI(database, logger)
   router := router.NewRouter(logger, "/ledger/v1.0.0", api)
   router.SetupRoutes()
