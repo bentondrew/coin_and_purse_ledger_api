@@ -10,10 +10,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-/*
-Struct which contains the Postgres DB connection pool.
-Contains the logger for logging in the struct methods.
-*/
+/*Postgresdb struct contains the Postgres DB connection pool and
+the logger for logging in the struct methods.*/
 type Postgresdb struct {
 	logger *log.Logger
 	gormdb *gorm.DB
@@ -71,13 +69,11 @@ func initializeDatabase(logger *log.Logger) (gormDB *gorm.DB) {
 	return gormDB
 }
 
-/*
-Returns a Postgresdb struct. Tries to open the connection
-pool. If unable to, sets the initialized variable to false.
-If successful in opening the db connection, tries to create
-the transactions table. If unable to, sets the initialized
-variable to false.
-*/
+/*NewPostgresDatabase returns a Postgresdb struct.
+Tries to open the connection pool. If unable to, sets
+the initialized variable to false. If successful in opening
+the db connection, tries to create the transactions table.
+If unable to, sets the initialized variable to false.*/
 func NewPostgresDatabase(logger *log.Logger) *Postgresdb {
 	gormDB := initializeDatabase(logger)
 	return &Postgresdb{
@@ -86,23 +82,12 @@ func NewPostgresDatabase(logger *log.Logger) *Postgresdb {
 	}
 }
 
+/*Close tries to close the postgres db pool.
+Panics if error.*/
 func (p *Postgresdb) Close() {
 	if err := p.gormdb.Close(); err != nil {
 		panic(err)
 	}
-}
-
-func (p *Postgresdb) DatabaseInitialized() (initialized bool) {
-	if p.gormdb == nil {
-		initialized = false
-	} else {
-		if p.gormdb.HasTable(&transaction.Transaction{}) {
-			initialized = true
-		} else {
-			initialized = false
-		}
-	}
-	return initialized
 }
 
 func (p *Postgresdb) checkDatabase() error {
@@ -111,11 +96,13 @@ func (p *Postgresdb) checkDatabase() error {
 	}
 	if p.gormdb != nil {
 		return nil
-	} else {
-		return NewStoreError("Database not initialized.")
 	}
+	return NewStoreError("Database not initialized.")
 }
 
+/*CreateTransaction tries to add the provided transaction struct
+to the database. Returns any errors. Error assumes transaction was
+not added.*/
 func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (err error) {
 	// To catch panic from uuid New
 	defer func() {
@@ -133,13 +120,15 @@ func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (er
 	return err
 }
 
+/*GetTransactions returns a slice of all the transaction structs in the database.
+If successful, the error return should be nil. If not successful the slice
+should be nil and error populated.*/
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
 	err := p.checkDatabase()
 	if err != nil {
 		return nil, err
-	} else {
-		var transactions []*transaction.Transaction
-		result := p.gormdb.Find(&transactions)
-		return transactions, result.Error
 	}
+	var transactions []*transaction.Transaction
+	result := p.gormdb.Find(&transactions)
+	return transactions, result.Error
 }
