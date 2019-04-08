@@ -12,15 +12,13 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
-
-func generateJsonByteArray(data interface{}) []byte {
+func generateJSONByteArray(data interface{}) []byte {
   b, err := json.Marshal(data)
   if err != nil {
     panic(err) 
   }
   return b
 }
-
 
 func TestEndpointsGoodDB(t *testing.T) {
   t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
@@ -56,7 +54,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleHello,
       expectedStatus: http.StatusOK,
-      expectedBody: string(generateJsonByteArray("Hello World!")[:]),
+      expectedBody: string(generateJSONByteArray("Hello World!")[:]),
     },
     {
       name: "hello_post",
@@ -64,7 +62,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleHello,
       expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method POST is not supported by /hello", Type: "about:blank",})[:]),
+      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method POST is not supported by /hello", Type: "about:blank",})[:]),
     },
     {
       name: "NotFound",
@@ -72,7 +70,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleDefault,
       expectedStatus: http.StatusNotFound,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
+      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
     },
     {
       name: "transactions_get",
@@ -80,7 +78,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusOK,
-      expectedBody: string(generateJsonByteArray(transactions)[:]),
+      expectedBody: string(generateJSONByteArray(transactions)[:]),
     },
     {
       name: "transactions_delete",
@@ -88,7 +86,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJsonByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method DELETE is not supported by /transactions", Type: "about:blank",})[:]),
+      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method DELETE is not supported by /transactions", Type: "about:blank",})[:]),
     },
    }
   for _, test := range tests {
