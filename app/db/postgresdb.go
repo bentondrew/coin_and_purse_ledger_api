@@ -4,8 +4,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
-
 	"github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
