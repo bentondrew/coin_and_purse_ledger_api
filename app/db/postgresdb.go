@@ -11,7 +11,8 @@ import (
 )
 
 /*Postgresdb struct contains the Postgres DB connection pool and
-the logger for logging in the struct methods.*/
+the logger for logging in the struct methods. This struct also
+implements the DataStore interface.*/
 type Postgresdb struct {
 	logger *log.Logger
 	gormdb *gorm.DB
@@ -102,7 +103,8 @@ func (p *Postgresdb) checkDatabase() error {
 
 /*CreateTransaction tries to add the provided transaction struct
 to the database. Returns any errors. Error assumes transaction was
-not added.*/
+not added. This is the implementation of the DataStore interface
+CreateTransaction.*/
 func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (err error) {
 	// To catch panic from uuid New
 	defer func() {
@@ -122,7 +124,8 @@ func (p *Postgresdb) CreateTransaction(transaction *transaction.Transaction) (er
 
 /*GetTransactions returns a slice of all the transaction structs in the database.
 If successful, the error return should be nil. If not successful the slice
-should be nil and error populated.*/
+should be nil and error populated. This is the implementation of the DataStore
+interface GetTransactions.*/
 func (p *Postgresdb) GetTransactions() ([]*transaction.Transaction, error) {
 	err := p.checkDatabase()
 	if err != nil {
