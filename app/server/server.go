@@ -6,7 +6,8 @@ import (
   "time"
 )
 
-
+/*NewServer returns a new instance of a custom
+net/http server.*/
 func NewServer(mux *http.ServeMux) *http.Server {
   return &http.Server{
     Addr: ":8080",
