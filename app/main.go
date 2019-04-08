@@ -1,6 +1,5 @@
 package main
 
-
 import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/server"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/logger"
@@ -9,11 +8,9 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/api"
 )
 
-
 var (
   version = "0.0.28"
 )
-
 
 func main() {
   logger := logger.NewLogger()

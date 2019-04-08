@@ -5,7 +5,6 @@ import (
   "github.com/google/uuid"
 )
 
-
 /*Transaction struct is the model for transaction
 instances in the ledger service. Incoming and
 outgoing JSON transactions details are converted to
