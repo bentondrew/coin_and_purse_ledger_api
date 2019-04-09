@@ -96,7 +96,7 @@ func TestEndpointsGoodDB(t *testing.T) {
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusBadRequest,
-      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type content is empty in request header", Type: "about:blank",})[:]),
+      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type content is missing in request header", Type: "about:blank",})[:]),
     },
     {
       name: "transactions_post_good",
