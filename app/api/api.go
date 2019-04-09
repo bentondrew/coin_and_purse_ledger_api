@@ -141,7 +141,7 @@ func (api *API) handleRequestTooLarge(w http.ResponseWriter, r *http.Request) (i
 
 func (api *API) handleMissingObjectKey(w http.ResponseWriter, r *http.Request, missingKey string) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
-  b, err := json.Marshal(problem.Problem{Status: 422, Title: "Unprocessable Entity", Detail: fmt.Sprintf("Request JSON object sent to %s is missing key %s.", r.URL, missingKey), Type: "about:blank",})
+  b, err := json.Marshal(problem.Problem{Status: 422, Title: "Unprocessable Entity", Detail: fmt.Sprintf("Request JSON object sent to %s is missing key: '%s'.", r.URL, missingKey), Type: "about:blank",})
   if err != nil {
     panic(err) 
   }
