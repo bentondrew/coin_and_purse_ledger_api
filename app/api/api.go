@@ -14,7 +14,6 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
 )
 
-
 /*API struct stores the data store used for the API endpoints.
 Also implements the methods for the API endpoints.*/
 type API struct {
@@ -22,9 +21,7 @@ type API struct {
   logger *log.Logger
 }
 
-
 type responseGenerator func(w http.ResponseWriter, r *http.Request) (int, []byte)
-
 
 /*NewAPI takes the provided data store and returns
 an initialized API struct with the data
@@ -36,7 +33,6 @@ func NewAPI(store db.DataStore, logger *log.Logger) *API {
   }
 }
 
-
 func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err interface{}) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: fmt.Sprintf("%s", err), Type: "about:blank",})
@@ -45,7 +41,6 @@ func (api *API) handleServerError(w http.ResponseWriter, r *http.Request, err in
   }
   return http.StatusInternalServerError, b
 }
-
 
 func (api *API) errorRecovery(next responseGenerator) responseGenerator {
   return func(w http.ResponseWriter, req *http.Request) (statusCode int, body []byte) {
@@ -70,7 +65,6 @@ func (api *API) errorRecovery(next responseGenerator) responseGenerator {
   }
 }
 
-
 /*responseWriter should be used right before any response is sent
 to write the desired header and body to the response.*/
 func (api *API) responseWriter(w http.ResponseWriter, statusCode int, body []byte) {
@@ -78,14 +72,12 @@ func (api *API) responseWriter(w http.ResponseWriter, statusCode int, body []byt
   w.Write(body)
 }
 
-
 func (api *API) apiHandlerFunc(next responseGenerator) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     statusCode, body := api.errorRecovery(next)(w, r)
     api.responseWriter(w, statusCode, body) 
   }
 }
-
 
 func (api *API) handleNotFound(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
@@ -96,13 +88,11 @@ func (api *API) handleNotFound(w http.ResponseWriter, r *http.Request) (int, []b
   return http.StatusNotFound, b
 }
 
-
 /*HandleDefault is used for returning a general resource not found (404) or a internal
 service error (500) if there is an issue processing the 404.*/
 func (api *API) HandleDefault(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.handleNotFound)(w,r)
 }
-
 
 func (api *API) handleMethodNotAllowed(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
@@ -113,7 +103,6 @@ func (api *API) handleMethodNotAllowed(w http.ResponseWriter, r *http.Request) (
   return http.StatusMethodNotAllowed, b
 }
 
-
 func (api *API) handleBadRequestMissingHeaderField(w http.ResponseWriter, r *http.Request, mf string) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 400, Title: "Bad Request", Detail: fmt.Sprintf("Field %s is missing in request header", mf), Type: "about:blank",})
@@ -122,7 +111,6 @@ func (api *API) handleBadRequestMissingHeaderField(w http.ResponseWriter, r *htt
   }
   return http.StatusBadRequest, b
 }
-
 
 func (api *API) handleBadRequestMissingHeaderFieldContent(w http.ResponseWriter, r *http.Request, field string) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
@@ -133,7 +121,6 @@ func (api *API) handleBadRequestMissingHeaderFieldContent(w http.ResponseWriter,
   return http.StatusBadRequest, b
 }
 
-
 func (api *API) handleUnsupportedMediaType(w http.ResponseWriter, r *http.Request) (int, []byte) {
   w.Header().Set("Content-Type", "application/problem+json")
   b, err := json.Marshal(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: fmt.Sprintf("Content type %s is not supported by %s", r.Header.Get("Content-Type"), r.URL), Type: "about:blank",})
@@ -143,6 +130,14 @@ func (api *API) handleUnsupportedMediaType(w http.ResponseWriter, r *http.Reques
   return http.StatusUnsupportedMediaType, b
 }
 
+func (api *API) handleRequestTooLarge(w http.ResponseWriter, r *http.Request) (int, []byte) {
+  w.Header().Set("Content-Type", "application/problem+json")
+  b, err := json.Marshal(problem.Problem{Status: 413, Title: "Request Entity Too Large", Detail: fmt.Sprintf("Request sent to %s is too large.", r.URL), Type: "about:blank",})
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusRequestEntityTooLarge, b
+}
 
 func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
@@ -159,12 +154,10 @@ func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) 
   }
 }
 
-
 /*HandleHello is a hello world test endpoint.*/
 func (api *API) HandleHello(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.helloResponseGeneration)(w, r)
 }
-
 
 func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
   params := r.URL.Query()
@@ -198,12 +191,10 @@ func (api *API) transactionGet(w http.ResponseWriter, r *http.Request) (status i
   return status, b
 }
 
-
 func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
   /*
   TODO:
     Need to write tests for this function.
-    Need to convert time from json to go.
   */
   contentTypeHeaderKey := "Content-Type"
   contentType, ok := r.Header[contentTypeHeaderKey]
@@ -213,7 +204,9 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
       if contentType[0] == "application/json" {
         reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
         if errR != nil {
-          panic(errR) 
+          /*Assumes failure due to request size. May need to make
+          more granular in the future.*/
+          return api.handleRequestTooLarge(w, r) 
         }
         if err := r.Body.Close(); err != nil {
           panic(err)
@@ -264,7 +257,6 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
   return api.handleBadRequestMissingHeaderField(w, r, contentTypeHeaderKey)
 }
 
-
 func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Request) (status int, b []byte) {
   switch r.Method {
   case http.MethodGet:
@@ -275,7 +267,6 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
     return api.handleMethodNotAllowed(w, r)
   }
 }
-
 
 /*HandleTransactions is the endpoint for handling transaction requests.
 Posts require JSON objects.*/
