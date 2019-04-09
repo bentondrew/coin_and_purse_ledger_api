@@ -211,7 +211,7 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
     if len(contentType) > 0 {
       /*Currently ignores any options in the content field.*/
       if contentType[0] == "application/json" {
-        reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 524288000))
+        reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 1000))
         if errR != nil {
           /*Assumes failure due to request size. May need to make
           more granular in the future.*/
