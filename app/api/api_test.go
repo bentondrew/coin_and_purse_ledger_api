@@ -6,6 +6,7 @@ import (
   "net/http/httptest"
   "testing"
   "encoding/json"
+  "bytes"
   "github.com/google/uuid"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
@@ -31,7 +32,7 @@ func TestEndpointsGoodDB(t *testing.T) {
   }
   id1 := uuid.New()
   id2 := uuid.New()
-  req_trans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
+  reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
   transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
   transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
   transactions := []*transaction.Transaction{}
@@ -91,7 +92,7 @@ func TestEndpointsGoodDB(t *testing.T) {
     },
     {
       name: "transactions_post_good",
-      in: httptest.NewRequest("POST", "/transactions", generateJSONByteArray(req_trans1)),
+      in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
       out: httptest.NewRecorder(),
       handlerFunc: api.HandleTransactions,
       expectedStatus: http.StatusOK,
