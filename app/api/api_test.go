@@ -91,6 +91,14 @@ func TestEndpointsGoodDB(t *testing.T) {
       expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method DELETE is not supported by /transactions", Type: "about:blank",})[:]),
     },
     {
+      name: "transactions_post_missing_content_type",
+      in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
+      out: httptest.NewRecorder(),
+      handlerFunc: api.HandleTransactions,
+      expectedStatus: http.StatusBadRequest,
+      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: fmt.Sprintf("Field %s content is empty in request header", "Content-Type"), Type: "about:blank",})[:]),
+    },
+    {
       name: "transactions_post_good",
       in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
       out: httptest.NewRecorder(),
