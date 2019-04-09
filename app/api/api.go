@@ -9,7 +9,6 @@ import (
   "io/ioutil"
   "time"
   "strings"
-  "strconv"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/db"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/problem"
@@ -205,8 +204,6 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
   TODO:
     Need to write tests for this function.
     Need to convert time from json to go.
-    Need to fail on required json fields (currently amount is set to zero when
-      amount is missing in request).
   */
   contentTypeHeaderKey := "Content-Type"
   contentType, ok := r.Header[contentTypeHeaderKey]
@@ -221,16 +218,16 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
         if err := r.Body.Close(); err != nil {
           panic(err)
         }
-        var stringJSON map[string]string
-        if errUm := json.Unmarshal(reqBody, &stringJSON); errUm != nil {
+        var reqObj map[string]interface{}
+        if errUm := json.Unmarshal(reqBody, &reqObj); errUm != nil {
           panic(errUm)
         }
         var transaction transaction.Transaction
         foundTime := false
         foundAmount := false
-        for k, v := range stringJSON {
+        for k, v := range reqObj {
           if strings.ToLower(k) == "timestamp" {
-            tmstmp, err := time.Parse(time.RFC3339, v)
+            tmstmp, err := time.Parse(time.RFC3339, v.(string))
             if err != nil {
               panic(err) 
             }
@@ -238,11 +235,7 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
             foundTime = true
           }
           if strings.ToLower(k) == "amount" {
-            amount, err := strconv.ParseFloat(v, 64)
-            if err != nil {
-              panic(err) 
-            }
-            transaction.Amount = amount
+            transaction.Amount = v.(float64)
             foundAmount = true
           }
         }
@@ -284,7 +277,8 @@ func (api *API) transactionsResponseGeneration(w http.ResponseWriter, r *http.Re
 }
 
 
-/*HandleTransactions is the endpoint for handling transaction requests.*/
+/*HandleTransactions is the endpoint for handling transaction requests.
+Posts require JSON objects.*/
 func (api *API) HandleTransactions(w http.ResponseWriter, r *http.Request) {
   api.apiHandlerFunc(api.transactionsResponseGeneration)(w, r)
 }
