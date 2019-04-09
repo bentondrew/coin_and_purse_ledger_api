@@ -139,6 +139,15 @@ func (api *API) handleRequestTooLarge(w http.ResponseWriter, r *http.Request) (i
   return http.StatusRequestEntityTooLarge, b
 }
 
+func (api *API) handleMissingObjectKey(w http.ResponseWriter, r *http.Request, missingKey string) (int, []byte) {
+  w.Header().Set("Content-Type", "application/problem+json")
+  b, err := json.Marshal(problem.Problem{Status: 422, Title: "Unprocessable Entity", Detail: fmt.Sprintf("Request JSON object sent to %s is missing key %s.", r.URL, missingKey), Type: "about:blank",})
+  if err != nil {
+    panic(err) 
+  }
+  return http.StatusUnprocessableEntity, b
+}
+
 func (api *API) helloResponseGeneration(w http.ResponseWriter, r *http.Request) (int, []byte) {
   switch r.Method {
   case http.MethodGet:
@@ -233,10 +242,10 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
           }
         }
         if !foundTime {
-          panic(NewAPIError("Timestamp for provided transaction not found."))
+          return api.handleMissingObjectKey(w, r, "timestamp")
         }
         if !foundAmount {
-          panic(NewAPIError("Amount for provided transaction not found."))
+          return api.handleMissingObjectKey(w, r, "amount")
         }
         if errCt := api.store.CreateTransaction(&transaction); errCt != nil {
           panic(errCt)
