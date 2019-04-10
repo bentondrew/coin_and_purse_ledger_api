@@ -262,8 +262,7 @@ func TestEndpoints(t *testing.T) {
         if err != nil {
           panic(err) 
         }
-        id1 := uuid.New()
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction1 := &transaction.Transaction{ID: "00000000-0000-0000-0000-000000000000", Timestamp: t1, Amount: 10,}
         mockStore := db.NewMockStore()
         mockStore.On("CreateTransaction").Return(nil)
         api := NewAPI(mockStore, nil)
@@ -274,7 +273,7 @@ func TestEndpoints(t *testing.T) {
           in: mockRequest,
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
-          expectedStatus: http.StatusOK,
+          expectedStatus: http.StatusCreated,
           expectedBody: string(generateJSONByteArray(transaction1)[:]),
         }
         values.handlerFunc(values.out, values.in)
