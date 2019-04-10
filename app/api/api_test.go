@@ -201,30 +201,6 @@ func TestEndpointsGoodDB(t *testing.T) {
   api := NewAPI(mockStore, nil)
   tests := []testValues {
     {
-      name: "hello_get",
-      in: httptest.NewRequest("GET", "/hello", nil),
-      out: httptest.NewRecorder(),
-      handlerFunc: api.HandleHello,
-      expectedStatus: http.StatusOK,
-      expectedBody: string(generateJSONByteArray("Hello World!")[:]),
-    },
-    {
-      name: "hello_post",
-      in: httptest.NewRequest("POST", "/hello", nil),
-      out: httptest.NewRecorder(),
-      handlerFunc: api.HandleHello,
-      expectedStatus: http.StatusMethodNotAllowed,
-      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method POST is not supported by /hello", Type: "about:blank",})[:]),
-    },
-    {
-      name: "NotFound",
-      in: httptest.NewRequest("GET", "/", nil),
-      out: httptest.NewRecorder(),
-      handlerFunc: api.HandleDefault,
-      expectedStatus: http.StatusNotFound,
-      expectedBody: string(generateJSONByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
-    },
-    {
       name: "transactions_get",
       in: httptest.NewRequest("GET", "/transactions", nil),
       out: httptest.NewRecorder(),
