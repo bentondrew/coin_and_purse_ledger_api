@@ -209,15 +209,15 @@ func TestEndpoints(t *testing.T) {
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
-        mockRequest := NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
         mockRequest.Header.Set("Content-Type", "")
         values := testValues{
           name: "transactions_post_missing_content_type_value",
           in: mockRequest,
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
-          expectedStatus: http.StatusOK,
-          expectedBody: string(generateJSONByteArray(transaction1)[:]),
+          expectedStatus: http.StatusBadRequest,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type content is empty in request header", Type: "about:blank",})[:]),
         }
         values.handlerFunc(values.out, values.in)
         checkResults(t,
@@ -241,7 +241,7 @@ func TestEndpoints(t *testing.T) {
         mockStore := db.NewMockStore()
         mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
-        mockRequest := NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
         mockRequest.Header.Set("Content-Type", "application/json")
         values := testValues{
           name: "transactions_post_good",
