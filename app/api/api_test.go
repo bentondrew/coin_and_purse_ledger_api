@@ -262,7 +262,7 @@ func TestEndpoints(t *testing.T) {
         if err != nil {
           panic(err) 
         }
-        transaction1 := &transaction.Transaction{ID: uuid.FromString("00000000-0000-0000-0000-000000000000"), Timestamp: t1, Amount: 10,}
+        transaction1 := &transaction.Transaction{ID: uuid.MustParse("00000000-0000-0000-0000-000000000000"), Timestamp: t1, Amount: 10,}
         mockStore := db.NewMockStore()
         mockStore.On("CreateTransaction").Return(nil)
         api := NewAPI(mockStore, nil)
