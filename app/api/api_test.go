@@ -171,6 +171,164 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
+    {
+      name: "transactions_get",
+      runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
+        values := testValues{
+          name: "transactions_get",
+          in: httptest.NewRequest("GET", "/transactions", nil),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusOK,
+          expectedBody: string(generateJSONByteArray(transactions)[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "transactions_delete",
+      runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
+        values := testValues{
+          name: "transactions_delete",
+          in: httptest.NewRequest("DELETE", "/transactions", nil),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusMethodNotAllowed,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method DELETE is not supported by /transactions", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "transactions_post_missing_content_type",
+      runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
+        values := testValues{
+          name: "transactions_post_missing_content_type",
+          in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusBadRequest,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type is missing in request header", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "transactions_post_good",
+      runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
+        values := testValues{
+          name: "transactions_post_good",
+          in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusOK,
+          expectedBody: string(generateJSONByteArray(transaction1)[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
    }
   for _, test := range tests {
     test := test
