@@ -204,6 +204,31 @@ func TestEndpoints(t *testing.T) {
         },
     },
     {
+      name: "transactions_post_missing_content_type_value",
+      runFunc: func(t *testing.T){
+        reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
+        mockStore := db.NewMockStore()
+        api := NewAPI(mockStore, nil)
+        mockRequest := NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest.Header.Set("Content-Type", "")
+        values := testValues{
+          name: "transactions_post_missing_content_type_value",
+          in: mockRequest,
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusOK,
+          expectedBody: string(generateJSONByteArray(transaction1)[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
       name: "transactions_post_good",
       runFunc: func(t *testing.T){
         t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
@@ -216,9 +241,11 @@ func TestEndpoints(t *testing.T) {
         mockStore := db.NewMockStore()
         mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
+        mockRequest := NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest.Header.Set("Content-Type", "application/json")
         values := testValues{
           name: "transactions_post_good",
-          in: httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1))),
+          in: mockRequest,
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
           expectedStatus: http.StatusOK,
