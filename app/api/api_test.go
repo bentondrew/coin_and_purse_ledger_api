@@ -57,6 +57,25 @@ func TestEndpoints(t *testing.T) {
     {
       name: "hello_get",
       runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
         values := testValues{
           name: "hello_get",
           in: httptest.NewRequest("GET", "/hello", nil),
@@ -77,6 +96,25 @@ func TestEndpoints(t *testing.T) {
     {
       name: "hello_post",
       runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
         values := testValues{
           name: "hello_post",
           in: httptest.NewRequest("POST", "/hello", nil),
@@ -97,6 +135,25 @@ func TestEndpoints(t *testing.T) {
     {
       name: "not_found",
       runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        id2 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
+        transactions := []*transaction.Transaction{}
+        transactions = append(transactions, transaction1)
+        transactions = append(transactions, transaction2) 
+        mockStore := db.NewMockStore()
+        mockStore.On("GetTransactions").Return(transactions, nil)
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
         values := testValues{
           name: "not_found",
           in: httptest.NewRequest("GET", "/", nil),
