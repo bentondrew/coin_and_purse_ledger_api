@@ -203,23 +203,23 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
+    /*Unable to test header of Content-Type without a value. httptest.Request.Header.Set will not allow
+      for no string as the second argument.*/
     {
-      name: "transactions_post_missing_content_type_value",
+      name: "transactions_post_unknown_content_type",
       runFunc: func(t *testing.T){
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
-        var nilString *string
-        nilString = nil
-        mockRequest.Header.Set("Content-Type", *nilString)
+        mockRequest.Header.Set("Content-Type", "")
         values := testValues{
-          name: "transactions_post_missing_content_type_value",
+          name: "transactions_post_unknown_content_type",
           in: mockRequest,
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
-          expectedStatus: http.StatusBadRequest,
-          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type content is empty in request header", Type: "about:blank",})[:]),
+          expectedStatus: http.StatusUnsupportedMediaType,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: "Content type  is not supported by /transactions", Type: "about:blank",})[:]),
         }
         values.handlerFunc(values.out, values.in)
         checkResults(t,
