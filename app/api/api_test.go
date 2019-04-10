@@ -233,13 +233,7 @@ func TestEndpoints(t *testing.T) {
     {
       name: "transactions_post_bad_unmarshal",
       runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        id1 := uuid.New()
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
