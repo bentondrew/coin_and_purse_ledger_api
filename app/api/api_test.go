@@ -24,7 +24,7 @@ func generateJSONByteArray(data interface{}) []byte {
 }
 
 func checkResults(t *testing.T,
-                  w http.ResponseWriter,
+                  w *httptest.ResponseRecorder,
                   r *http.Request,
                   expectedStatus int,
                   expectedBody string,
