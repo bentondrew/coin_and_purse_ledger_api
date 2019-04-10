@@ -21,7 +21,7 @@ func NewMockStore() *MockStore {
 /*CreateTransaction mocks the CreateTransaction method
 from the DataStore interface.*/
 func (ms *MockStore) CreateTransaction(transaction *transaction.Transaction) (error) {
-  rets:= ms.Called(transaction)
+  rets:= ms.Called()
   return rets.Error(0)
 }
 
