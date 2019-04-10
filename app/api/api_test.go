@@ -112,15 +112,13 @@ func TestEndpointsGoodDB(t *testing.T) {
     t.Run(test.name, func(t *testing.T) {
       test.handlerFunc(test.out, test.in)
       if test.out.Code != test.expectedStatus {
-        t.Logf("For test %s\nExpected status code: %d\nGot status code: %d\n",
+        t.Errorf("For test %s\nExpected status code: %d\nGot status code: %d\n",
                test.name, test.expectedStatus, test.out.Code)
-        t.Fail()
       }
       body := test.out.Body.String()
       if body != test.expectedBody {
-        t.Logf("For test %s\nExpected body: %s\nGot body: %s\n",
+        t.Errorf("For test %s\nExpected body: %s\nGot body: %s\n",
                test.name, test.expectedBody, body)
-        t.Fail()
       }
     })
   } 
