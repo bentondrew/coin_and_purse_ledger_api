@@ -13,12 +13,31 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
+// type testFunc func(t *testing.T)
+
 func generateJSONByteArray(data interface{}) []byte {
   b, err := json.Marshal(data)
   if err != nil {
     panic(err) 
   }
   return b
+}
+
+func checkResults(t *testing.T,
+                  w http.ResponseWriter,
+                  r *http.Request,
+                  expectedStatus int,
+                  expectedBody string,
+                  name string) {
+  if w.Code != expectedStatus {
+    t.Errorf("For test %s\nExpected status code: %d\nGot status code: %d\n",
+             name, expectedStatus, w.Code)
+  }
+  body := w.Body.String()
+  if body != expectedBody {
+    t.Errorf("For test %s\nExpected body: %s\nGot body: %s\n",
+             name, expectedBody, body)
+  }
 }
 
 func TestEndpointsGoodDB(t *testing.T) {
@@ -111,15 +130,12 @@ func TestEndpointsGoodDB(t *testing.T) {
     test := test
     t.Run(test.name, func(t *testing.T) {
       test.handlerFunc(test.out, test.in)
-      if test.out.Code != test.expectedStatus {
-        t.Errorf("For test %s\nExpected status code: %d\nGot status code: %d\n",
-               test.name, test.expectedStatus, test.out.Code)
-      }
-      body := test.out.Body.String()
-      if body != test.expectedBody {
-        t.Errorf("For test %s\nExpected body: %s\nGot body: %s\n",
-               test.name, test.expectedBody, body)
-      }
+      checkResults(t,
+                   test.out,
+                   test.in,
+                   test.expectedStatus,
+                   test.expectedBody,
+                   test.name)
     })
   } 
 }
