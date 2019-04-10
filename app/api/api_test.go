@@ -13,7 +13,16 @@ import (
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
 )
 
-// type testFunc func(t *testing.T)
+type testFunc func(t *testing.T)
+
+type testValues struct {
+  name string
+  in *http.Request
+  out *httptest.ResponseRecorder
+  handlerFunc http.HandlerFunc
+  expectedStatus int
+  expectedBody string
+}
 
 func generateJSONByteArray(data interface{}) []byte {
   b, err := json.Marshal(data)
@@ -40,6 +49,78 @@ func checkResults(t *testing.T,
   }
 }
 
+func TestEndpoints(t *testing.T) {
+  tests := []struct {
+    name string
+    runFunc testFunc
+  }{
+    {
+      name: "hello_get",
+      runFunc: func(t *testing.T){
+        values := testValues{
+          name: "hello_get",
+          in: httptest.NewRequest("GET", "/hello", nil),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleHello,
+          expectedStatus: http.StatusOK,
+          expectedBody: string(generateJSONByteArray("Hello World!")[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "hello_post",
+      runFunc: func(t *testing.T){
+        values := testValues{
+          name: "hello_post",
+          in: httptest.NewRequest("POST", "/hello", nil),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleHello,
+          expectedStatus: http.StatusMethodNotAllowed,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 405, Title: "Method Not Allowed", Detail: "Method POST is not supported by /hello", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "not_found",
+      runFunc: func(t *testing.T){
+        values := testValues{
+          name: "not_found",
+          in: httptest.NewRequest("GET", "/", nil),
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleDefault,
+          expectedStatus: http.StatusNotFound,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 404, Title: "Not Found", Detail: "/ not found", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+   }
+  for _, test := range tests {
+    test := test
+    t.Run(test.name, test.runFunc)
+  }
+}
+
 func TestEndpointsGoodDB(t *testing.T) {
   t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
   if err != nil {
@@ -61,14 +142,7 @@ func TestEndpointsGoodDB(t *testing.T) {
   mockStore.On("GetTransactions").Return(transactions, nil)
   mockStore.On("CreateTransaction").Return(transaction1, nil)
   api := NewAPI(mockStore, nil)
-  tests := []struct {
-    name string
-    in *http.Request
-    out *httptest.ResponseRecorder
-    handlerFunc http.HandlerFunc
-    expectedStatus int
-    expectedBody string
-  }{
+  tests := []testValues {
     {
       name: "hello_get",
       in: httptest.NewRequest("GET", "/hello", nil),
