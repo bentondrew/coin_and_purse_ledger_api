@@ -1,9 +1,16 @@
-FROM golang:1.11.5-alpine3.8 as builder
+# Install required distro packages
+FROM golang:1.11.5-alpine3.8 as setup
 RUN apk add --no-cache git && \
     adduser -D -g '' gouser
 COPY app/ $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app/
 WORKDIR $GOPATH/src/github.com/Drewan-Tech/coin_and_purse_ledger_service/app
+
+# Install packages
+FROM setup as package_install
 RUN go get -d -v
+
+# Test and build
+FROM package_install as builder
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v github.com/Drewan-Tech/coin_and_purse_ledger_service/app/api
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/main
 
