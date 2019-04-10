@@ -210,7 +210,8 @@ func TestEndpoints(t *testing.T) {
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
-        mockRequest.Header.Set("Content-Type")
+        nilString := nil
+        mockRequest.Header.Set("Content-Type", &nilString)
         values := testValues{
           name: "transactions_post_missing_content_type_value",
           in: mockRequest,
