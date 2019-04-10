@@ -65,16 +65,7 @@ func TestEndpoints(t *testing.T) {
         if err != nil {
           panic(err) 
         }
-        id1 := uuid.New()
-        id2 := uuid.New()
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "hello_get",
