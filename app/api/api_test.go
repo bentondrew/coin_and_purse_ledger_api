@@ -78,25 +78,8 @@ func TestEndpoints(t *testing.T) {
     },
     {
       name: "hello_post",
-      runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
-        id1 := uuid.New()
-        id2 := uuid.New()
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
+      runFunc: func(t *testing.T){ 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "hello_post",
@@ -118,24 +101,7 @@ func TestEndpoints(t *testing.T) {
     {
       name: "not_found",
       runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
-        id1 := uuid.New()
-        id2 := uuid.New()
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "not_found",
@@ -171,10 +137,9 @@ func TestEndpoints(t *testing.T) {
         transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
         transactions := []*transaction.Transaction{}
         transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
+        transactions = append(transactions, transaction2)
         mockStore := db.NewMockStore()
         mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "transactions_get",
@@ -196,24 +161,7 @@ func TestEndpoints(t *testing.T) {
     {
       name: "transactions_delete",
       runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
-        id1 := uuid.New()
-        id2 := uuid.New()
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "transactions_delete",
@@ -235,25 +183,8 @@ func TestEndpoints(t *testing.T) {
     {
       name: "transactions_post_missing_content_type",
       runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
-        id1 := uuid.New()
-        id2 := uuid.New()
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
-        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
           name: "transactions_post_missing_content_type",
@@ -279,20 +210,10 @@ func TestEndpoints(t *testing.T) {
         if err != nil {
           panic(err) 
         }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
         id1 := uuid.New()
-        id2 := uuid.New()
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
         transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
-        transaction2 := &transaction.Transaction{ID: id2, Timestamp: t2, Amount: -5,}
-        transactions := []*transaction.Transaction{}
-        transactions = append(transactions, transaction1)
-        transactions = append(transactions, transaction2) 
         mockStore := db.NewMockStore()
-        mockStore.On("GetTransactions").Return(transactions, nil)
         mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         values := testValues{
