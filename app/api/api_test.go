@@ -231,7 +231,7 @@ func TestEndpoints(t *testing.T) {
         },
     },
     {
-      name: "transactions_post_good",
+      name: "transactions_post_bad_unmarshal",
       runFunc: func(t *testing.T){
         t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
         if err != nil {
@@ -244,6 +244,37 @@ func TestEndpoints(t *testing.T) {
         mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest.Header.Set("Content-Type", "application/json")
+        values := testValues{
+          name: "transactions_post_bad_unmarshal",
+          in: mockRequest,
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusInternalServerError,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 500, Title: "Internal Server Error", Detail: "json: cannot unmarshal string into Go value of type map[string]interface {}", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "transactions_post_good",
+      runFunc: func(t *testing.T){
+        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
+        if err != nil {
+          panic(err) 
+        }
+        id1 := uuid.New()
+        transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
+        mockStore := db.NewMockStore()
+        mockStore.On("CreateTransaction").Return(transaction1, nil)
+        api := NewAPI(mockStore, nil)
+        mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(transaction1)))
         mockRequest.Header.Set("Content-Type", "application/json")
         values := testValues{
           name: "transactions_post_good",
