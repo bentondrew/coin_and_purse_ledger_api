@@ -57,14 +57,6 @@ func TestEndpoints(t *testing.T) {
     {
       name: "hello_get",
       runFunc: func(t *testing.T){
-        t1, err := time.Parse(time.RFC3339, "2019-01-30T03:17:41.12004Z")
-        if err != nil {
-          panic(err) 
-        }
-        t2, err := time.Parse(time.RFC3339, "2019-01-30T19:41:10.421617Z")
-        if err != nil {
-          panic(err) 
-        }
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
         values := testValues{
