@@ -203,6 +203,8 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
+    /*TODO: Write function to unpack content type which can be mocked then write test.
+      Maybe look into how to set a content type with options.*/
     /*Unable to test header of Content-Type without a value. httptest.Request.Header.Set will not allow
       for no string as the second argument.*/
     {
@@ -230,6 +232,14 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
+    /*TODO: Add test for body too big.*/
+    /*TODO: Add test for closing body error.*/
+    /*TODO: Add test for missing timestamp.*/
+    /*TODO: Add test for timestamp in wrong format.*/
+    /*TODO: Add test for missing amount.*/
+    /*TODO: Add test for amout of wrong type.*/
+    /*TODO: Add test for bad CreateTransaction.*/
+    /*TODO: Add test for bad JSON marshal.*/
     {
       name: "transactions_post_bad_unmarshal",
       runFunc: func(t *testing.T){
