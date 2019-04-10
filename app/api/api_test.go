@@ -241,7 +241,6 @@ func TestEndpoints(t *testing.T) {
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
         transaction1 := &transaction.Transaction{ID: id1, Timestamp: t1, Amount: 10,}
         mockStore := db.NewMockStore()
-        mockStore.On("CreateTransaction").Return(transaction1, nil)
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
         mockRequest.Header.Set("Content-Type", "application/json")
