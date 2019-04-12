@@ -208,13 +208,38 @@ func TestEndpoints(t *testing.T) {
     /*Unable to test header of Content-Type without a value. httptest.Request.Header.Set will not allow
       for no string as the second argument.*/
     {
-      name: "transactions_post_unknown_content_type",
+      name: "transactions_post_empty_content_type",
       runFunc: func(t *testing.T){
         reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
         mockStore := db.NewMockStore()
         api := NewAPI(mockStore, nil)
         mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
         mockRequest.Header.Set("Content-Type", "")
+        values := testValues{
+          name: "transactions_post_empty_content_type",
+          in: mockRequest,
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusBadRequest,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 400, Title: "Bad Request", Detail: "Field Content-Type content is empty in request header", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
+    {
+      name: "transactions_post_unknown_content_type",
+      runFunc: func(t *testing.T){
+        reqTrans1 := `{"timestamp": "2019-01-30T03:17:41.12004Z", "amount": 10}`
+        mockStore := db.NewMockStore()
+        api := NewAPI(mockStore, nil)
+        mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest.Header.Set("Content-Type", "blah")
         values := testValues{
           name: "transactions_post_unknown_content_type",
           in: mockRequest,

@@ -206,11 +206,13 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
     Need to write tests for this function.
   */
   contentTypeHeaderKey := "Content-Type"
-  contentType, ok := r.Header[contentTypeHeaderKey]
+  _, ok := r.Header[contentTypeHeaderKey]
   if ok {
-    if len(contentType) > 0 {
-      /*Currently ignores any options in the content field.*/
-      if contentType[0] == "application/json" {
+    /*Currently ignores any options in the content field.
+      If empty Get sets the return to an empty string.*/
+    contentType := r.Header.Get(contentTypeHeaderKey)
+    if contentType != "" {
+      if contentType == "application/json" {
         reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 1000))
         if errR != nil {
           /*Assumes failure due to request size. May need to make
