@@ -203,10 +203,6 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
-    /*TODO: Write function to unpack content type which can be mocked then write test.
-      Maybe look into how to set a content type with options.*/
-    /*Unable to test header of Content-Type without a value. httptest.Request.Header.Set will not allow
-      for no string as the second argument.*/
     {
       name: "transactions_post_empty_content_type",
       runFunc: func(t *testing.T){
@@ -246,7 +242,7 @@ func TestEndpoints(t *testing.T) {
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
           expectedStatus: http.StatusUnsupportedMediaType,
-          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: "Content type  is not supported by /transactions", Type: "about:blank",})[:]),
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 415, Title: "Unsupported Media Type", Detail: "Content type blah is not supported by /transactions", Type: "about:blank",})[:]),
         }
         values.handlerFunc(values.out, values.in)
         checkResults(t,
