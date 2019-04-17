@@ -213,18 +213,12 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
     contentType := r.Header.Get(contentTypeHeaderKey)
     if contentType != "" {
       if contentType == "application/json" {
-        reqBody, errR := ioutil.ReadAll(io.LimitReader(r.Body, 1000))
-        if errR != nil {
-          /*Assumes failure due to request size. May need to make
-          more granular in the future.*/
-          return api.handleRequestTooLarge(w, r) 
-        }
-        if err := r.Body.Close(); err != nil {
-          panic(err)
-        }
         var reqObj map[string]interface{}
-        if errUm := json.Unmarshal(reqBody, &reqObj); errUm != nil {
-          panic(errUm)
+        if err := json.NewDecoder(http.MaxBytesReader(w, r, 1024)).Decode(reqObj); err != nil {
+          if err.Error() == "http: request body too large" {
+            return api.handleRequestTooLarge(w, r)
+          }
+          panic(err)
         }
         var transaction transaction.Transaction
         foundTime := false
