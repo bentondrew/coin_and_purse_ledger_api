@@ -253,8 +253,31 @@ func TestEndpoints(t *testing.T) {
                      values.name)
         },
     },
-    /*TODO: Add test for body too big.*/
-    /*TODO: Add test for closing body error.*/
+    {
+      name: "transactions_post_content_too_big",
+      runFunc: func(t *testing.T){
+        reqTrans1 := `{"timestamp":"2019:17:41.12004Z", "amount": 10, "junk": {"timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z", "amount": 10, "timestamp":"2019-01-30T03:17:41.12004Z" }}`
+        mockStore := db.NewMockStore()
+        api := NewAPI(mockStore, nil)
+        mockRequest := httptest.NewRequest("POST", "/transactions", bytes.NewReader(generateJSONByteArray(reqTrans1)))
+        mockRequest.Header.Set("Content-Type", "application/json")
+        values := testValues{
+          name: "transactions_post_content_too_big",
+          in: mockRequest,
+          out: httptest.NewRecorder(),
+          handlerFunc: api.HandleTransactions,
+          expectedStatus: http.StatusUnsupportedMediaType,
+          expectedBody: string(generateJSONByteArray(problem.Problem{Status: 413, Title: "Request Entity Too Large", Detail: "Request sent to /transactions is too large.", Type: "about:blank",})[:]),
+        }
+        values.handlerFunc(values.out, values.in)
+        checkResults(t,
+                     values.out,
+                     values.in,
+                     values.expectedStatus,
+                     values.expectedBody,
+                     values.name)
+        },
+    },
     /*TODO: Add test for missing timestamp.*/
     /*TODO: Add test for timestamp in wrong format.*/
     /*TODO: Add test for missing amount.*/
