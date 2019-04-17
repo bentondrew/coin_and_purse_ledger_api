@@ -212,7 +212,7 @@ func (api *API) transactionPost(w http.ResponseWriter, r *http.Request) (status 
     if contentType != "" {
       if contentType == "application/json" {
         var reqObj map[string]interface{}
-        if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1024)).Decode(reqObj); err != nil {
+        if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1024)).Decode(&reqObj); err != nil {
           if err.Error() == "http: request body too large" {
             return api.handleRequestTooLarge(w, r)
           }
