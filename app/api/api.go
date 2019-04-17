@@ -5,8 +5,6 @@ import (
   "encoding/json"
   "fmt"
   "log"
-  "io"
-  "io/ioutil"
   "time"
   "strings"
   "github.com/Drewan-Tech/coin_and_purse_ledger_service/app/transaction"
