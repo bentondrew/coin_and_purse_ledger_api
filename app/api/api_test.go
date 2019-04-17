@@ -266,7 +266,7 @@ func TestEndpoints(t *testing.T) {
           in: mockRequest,
           out: httptest.NewRecorder(),
           handlerFunc: api.HandleTransactions,
-          expectedStatus: http.StatusUnsupportedMediaType,
+          expectedStatus: http.StatusRequestEntityTooLarge,
           expectedBody: string(generateJSONByteArray(problem.Problem{Status: 413, Title: "Request Entity Too Large", Detail: "Request sent to /transactions is too large.", Type: "about:blank",})[:]),
         }
         values.handlerFunc(values.out, values.in)
