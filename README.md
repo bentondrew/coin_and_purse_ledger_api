@@ -17,3 +17,9 @@ docker build -t ledger-api:v0.1.0 .
 ```bash
 docker run --rm ledger-api:v0.1.0
 ```
+
+## Docker helpers
+### Remove dangling images [source](https://stackoverflow.com/a/33913711)
+```bash
+docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+```
