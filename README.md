@@ -1,6 +1,9 @@
 # coin_and_purse_ledger_service
 Service which provides the ledger functions.
 
+## Rust Docker Image
+https://hub.docker.com/_/rust/
+
 ## Rust tips
 ### Create new cargo package with rust docker image
 ```bash
@@ -23,3 +26,6 @@ docker run --rm ledger-api:v0.1.0
 ```bash
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
 ```
+
+## Potential Rust Web Service Frameworks
+https://actix.rs/docs/installation/
