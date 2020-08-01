@@ -1,5 +1,31 @@
 // Rust tutorial
-// https://doc.rust-lang.org/rust-by-example/primitives/literals.html
+// https://doc.rust-lang.org/rust-by-example/primitives/tuples.html
+
+use std::fmt;
+
+fn reverse(pair: (i32, bool)) -> (bool, i32) {
+    // 'let' can be used to bind the members if a tuple to variables
+    let (integer, boolean) = pair;
+
+    (boolean, integer)
+}
+
+#[derive(Debug)]
+struct Matrix (f32, f32, f32, f32);
+
+
+impl fmt::Display for Matrix {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "{:?}", (self.0, self.1))?;
+        write!(f, "{:?}", (self.2, self.3))
+    }
+}
+
+
+fn transpose(in_mat: Matrix) -> Matrix {
+    Matrix(in_mat.0, in_mat.2, in_mat.1, in_mat.3)
+}
+
 
 fn main() {
     // Type annotation
@@ -35,4 +61,29 @@ fn main() {
     println!("0x80 >> 2 is 0x{:x}", 0x80u32 >> 2);
     // Underscore in numbers to improve readability
     println!("One million is written as {}", 1_000_000u32);
+
+    // Tuples
+    let long_tuple = (1u8, 2u16, 3u32, 4u64,
+                      -1i8, -2i16, -3i32, -4i64,
+                      0.1f32, 0.2f64, 'a', true);
+    println!("long tuple first value: {}", long_tuple.0);
+    println!("long tuple second value: {}", long_tuple.1);
+    let tuple_of_tuples = ((1u8, 2u16, 2u32), (4u64, -1i8), -2i16);
+    println!("tuple of tuples: {:?}", tuple_of_tuples);
+    // Default Debug length limit to printing tuples
+    // let too_long_tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+    // println!("too long tuple: {:?}", too_long_tuple);
+    let pair = (1, true);
+    println!("pair is {:?}", pair);
+    println!("the reversed pair is {:?}", reverse(pair));
+    println!("one element tuple: {:?}", (5u32,));
+    println!("just an integer: {:?}", (5u32));
+    let example_tuple = (1, "hello", 4.5, true);
+    let (a, b, c, d) = example_tuple;
+    println!("{:?}, {:?}, {:?}, {:?}", a, b, c, d);
+    let matrix = Matrix(1.1, 1.2, 2.1, 2.2);
+    println!("{:?}", matrix);
+    println!("{}", matrix);
+    println!("Matrix:\n{}", matrix);
+    println!("Transpose:\n{}", transpose(matrix));
 }
