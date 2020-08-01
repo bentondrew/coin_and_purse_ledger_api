@@ -1,5 +1,5 @@
 // Rust tutorial
-// https://doc.rust-lang.org/rust-by-example/primitives.html
+// https://doc.rust-lang.org/rust-by-example/primitives/literals.html
 
 fn main() {
     // Type annotation
@@ -18,4 +18,13 @@ fn main() {
     // _mutable = true;
     // Variables can be overwritten with shadowing
     let _mutable = true; // Redeclares _mutable as bool rather than i32
+
+    // Integer addition
+    println!("1 + 2 = {}", 1u32 + 2);
+    // Integer subtraction
+    println!("1 - 2 = {}", 1i32 - 2);
+    // Boolean logic
+    println!("true AND false is {}", true && false);
+    println!("true OR false is {}", true || false);
+    println!("NOT true is {}", !true);
 }
