@@ -1,7 +1,8 @@
 // Rust tutorial
-// https://doc.rust-lang.org/rust-by-example/primitives/tuples.html
+// https://doc.rust-lang.org/rust-by-example/primitives/array.html
 
 use std::fmt;
+use std::mem;
 
 fn reverse(pair: (i32, bool)) -> (bool, i32) {
     // 'let' can be used to bind the members if a tuple to variables
@@ -24,6 +25,13 @@ impl fmt::Display for Matrix {
 
 fn transpose(in_mat: Matrix) -> Matrix {
     Matrix(in_mat.0, in_mat.2, in_mat.1, in_mat.3)
+}
+
+
+// &[i32] is a slice borrow
+fn analyze_slice(slice: &[i32]) {
+    println!("first element of the slice: {}", slice[0]);
+    println!("the slice has {} elements", slice.len());
 }
 
 
@@ -86,4 +94,23 @@ fn main() {
     println!("{}", matrix);
     println!("Matrix:\n{}", matrix);
     println!("Transpose:\n{}", transpose(matrix));
+
+    //Arrays and slices
+    let xs: [i32; 5] = [1, 2, 3, 4, 5];
+    let ys: [i32; 500] = [0; 500];
+    println!("first element of xs array: {}", xs[0]);
+    println!("second element of xs array: {}", xs[1]);
+    println!("xs array size: {}", xs.len());
+    // Following can be done as array is stack allocated so size is known
+    println!("xs array occupies {} bytes", mem::size_of_val(&xs));
+    // Arrays can be borrowed as slices
+    println!("Borrow the whole array as a slice");
+    analyze_slice(&xs);
+    // Borrow section of array as slice
+    // Starting index is the first position in the slice
+    // Ending index is one more than last position in the slice
+    println!("borrow a section of the array as a slice");
+    analyze_slice(&ys[490 .. 500]);
+    // Out of bound indexing causes compile error
+    // println!("{}", xs[5]);
 }
